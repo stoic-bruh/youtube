@@ -1,0 +1,27 @@
+kind = "web"
+previewPath = "/"
+title = "YouTube Factory"
+version = "1.0.0"
+id = "artifacts/youtube-factory"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 19233
+
+[services.development]
+run = "pnpm --filter @workspace/youtube-factory run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/youtube-factory", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/youtube-factory/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "19233"
+BASE_PATH = "/"
