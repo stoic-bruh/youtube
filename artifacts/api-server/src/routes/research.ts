@@ -6,9 +6,9 @@
  * Production Docker routes these to the Python FastAPI service.
  */
 import { Router, type Request, type Response } from "express";
-import { db } from "../db";
-import { researchResults } from "@workspace/db/schema";
-import { eq, desc, and, isNull } from "drizzle-orm";
+import { db } from "@workspace/db";
+import { researchResults } from "@workspace/db";
+import { eq, desc, and } from "drizzle-orm";
 import { z } from "zod";
 import { randomUUID } from "crypto";
 
@@ -268,7 +268,7 @@ async function processResearch(id: string, request: z.infer<typeof ResearchInput
     // Simulate parallel provider fetching
     const t0 = Date.now();
     await new Promise(r => setTimeout(r, 300));
-    const providerResults = providers.map(p => generateMockProviderResult(p, topic, style, tone));
+    const providerResults = providers.map((p: string) => generateMockProviderResult(p, topic, style, tone));
     const elapsed = Date.now() - t0;
 
     await addLog("INFO", `Providers completed in ${elapsed}ms — ${providers.length} OK, 0 failed`);
@@ -299,7 +299,7 @@ async function processResearch(id: string, request: z.infer<typeof ResearchInput
       for (const faq of r.faqs) if (!isNearDuplicate(faq.q, seenFaqs)) { seenFaqs.push(faq.q); }
     }
 
-    const avgConf = providerResults.reduce((s, r) => s + r.confidence, 0) / providerResults.length;
+    const avgConf = providerResults.reduce((s: number, r: MockProviderResult) => s + r.confidence, 0) / providerResults.length;
 
     const sections = [
       { sectionType: "summary", title: "Overview", content: bestSummary, confidence: +avgConf.toFixed(3), items: [], sourceIds: [] },
@@ -313,7 +313,7 @@ async function processResearch(id: string, request: z.infer<typeof ResearchInput
       ...(seenMisconceptions.length > 0 ? [{ sectionType: "misconception", title: "Common Misconceptions", content: `${seenMisconceptions.length} misconceptions.`, confidence: +(avgConf + 0.05).toFixed(3), items: seenMisconceptions, sourceIds: [] }] : []),
       ...(seenFaqs.length > 0 ? [{
         sectionType: "faq", title: "Frequently Asked Questions", content: `${seenFaqs.length} FAQs.`, confidence: +avgConf.toFixed(3),
-        items: providerResults.flatMap(r => r.faqs).filter((f,i,a) => a.findIndex(x => x.q === f.q) === i).map(f => `${f.q}\n${f.a}`),
+        items: providerResults.flatMap((r: MockProviderResult) => r.faqs).filter((f: {q:string;a:string}, i: number, a: {q:string;a:string}[]) => a.findIndex((x: {q:string;a:string}) => x.q === f.q) === i).map((f: {q:string;a:string}) => `${f.q}\n${f.a}`),
         sourceIds: [],
       }] : []),
     ];
@@ -325,13 +325,13 @@ async function processResearch(id: string, request: z.infer<typeof ResearchInput
     await new Promise(r => setTimeout(r, 100));
 
     const seenUrls = new Set<string>();
-    const allRefs = providerResults.flatMap(r => r.references)
-      .filter(r => { if (seenUrls.has(r.url)) return false; seenUrls.add(r.url); return true; })
-      .sort((a, b) => b.credibilityScore - a.credibilityScore)
+    const allRefs = providerResults.flatMap((r: MockProviderResult) => r.references)
+      .filter((r: MockRef) => { if (seenUrls.has(r.url)) return false; seenUrls.add(r.url); return true; })
+      .sort((a: MockRef, b: MockRef) => b.credibilityScore - a.credibilityScore)
       .slice(0, 15);
 
     const kwMap = new Map<string, MockKw>();
-    for (const kw of providerResults.flatMap(r => r.keywords)) {
+    for (const kw of providerResults.flatMap((r: MockProviderResult) => r.keywords)) {
       const key = kw.term.toLowerCase().trim();
       const ex = kwMap.get(key);
       if (!ex || kw.relevance > ex.relevance) {
@@ -348,7 +348,7 @@ async function processResearch(id: string, request: z.infer<typeof ResearchInput
     await addLog("INFO", "Phase 4/4 — Calculating confidence score and difficulty");
     await new Promise(r => setTimeout(r, 50));
 
-    const refQuality = allRefs.length > 0 ? allRefs.reduce((s, r) => s + r.credibilityScore, 0) / allRefs.length : 0.5;
+    const refQuality = allRefs.length > 0 ? allRefs.reduce((s: number, r: MockRef) => s + r.credibilityScore, 0) / allRefs.length : 0.5;
     const richness = Math.min(1.0, sections.length / 9);
     const confidence = +(avgConf * 0.40 + 1.0 * 0.20 + refQuality * 0.20 + richness * 0.20).toFixed(3);
 
@@ -430,7 +430,7 @@ router.get("/", async (req: Request, res: Response) => {
   const offset = Number(req.query.offset) || 0;
 
   let rows = await db.select().from(researchResults).orderBy(desc(researchResults.createdAt)).limit(limit + 1).offset(offset);
-  if (status) rows = rows.filter(r => r.status === status);
+  if (status) rows = rows.filter((r: typeof rows[number]) => r.status === status);
   res.json({ items: rows.slice(0, limit).map(toApi), total: rows.length });
 });
 
@@ -488,16 +488,18 @@ router.post("/", async (req: Request, res: Response) => {
 
 // GET /research/:id
 router.get("/:id", async (req: Request, res: Response) => {
-  const [row] = await db.select().from(researchResults).where(eq(researchResults.id, req.params.id));
+  const id = req.params["id"] as string;
+  const [row] = await db.select().from(researchResults).where(eq(researchResults.id, id));
   if (!row) { res.status(404).json({ error: "Not found" }); return; }
   res.json(toApi(row));
 });
 
 // DELETE /research/:id
 router.delete("/:id", async (req: Request, res: Response) => {
-  const [row] = await db.select().from(researchResults).where(eq(researchResults.id, req.params.id));
+  const id = req.params["id"] as string;
+  const [row] = await db.select().from(researchResults).where(eq(researchResults.id, id));
   if (!row) { res.status(404).json({ error: "Not found" }); return; }
-  await db.delete(researchResults).where(eq(researchResults.id, req.params.id));
+  await db.delete(researchResults).where(eq(researchResults.id, id));
   res.status(204).send();
 });
 

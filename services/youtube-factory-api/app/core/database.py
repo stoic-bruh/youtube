@@ -74,3 +74,18 @@ async def dispose_engine() -> None:
     if _engine:
         await _engine.dispose()
         _engine = None
+
+
+# Convenience alias used by Celery tasks (which cannot use the FastAPI
+# dependency-injection version of get_db).  Call as:
+#   async with async_session_factory() as session:
+def async_session_factory() -> AsyncSession:  # type: ignore[return]
+    """Return a new async session from the shared session factory.
+
+    Usage (async context manager)::
+
+        async with async_session_factory() as session:
+            async with session.begin():
+                ...
+    """
+    return get_session_factory()()  # type: ignore[return-value]
