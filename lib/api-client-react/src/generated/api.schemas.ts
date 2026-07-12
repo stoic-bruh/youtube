@@ -9,6 +9,99 @@ export interface HealthStatus {
   status: string;
 }
 
+export interface ResearchInput {
+  topic: string;
+  targetAudience?: string;
+  videoLengthMinutes?: number;
+  language?: string;
+  style?: string;
+  tone?: string;
+  providers?: string[];
+}
+
+export interface ResearchKeyword {
+  term: string;
+  relevance: number;
+  /** @nullable */
+  searchVolume?: number | null;
+  /** @nullable */
+  difficulty?: string | null;
+  semanticTags?: string[];
+}
+
+export interface ResearchReference {
+  id?: string;
+  title: string;
+  url: string;
+  sourceType: string;
+  /** @nullable */
+  author?: string | null;
+  /** @nullable */
+  publishedAt?: string | null;
+  /** @nullable */
+  snippet?: string | null;
+  credibilityScore: number;
+  citationFormat: string;
+  provider?: string;
+}
+
+export interface ResearchSection {
+  sectionType: string;
+  title: string;
+  content: string;
+  confidence: number;
+  items?: string[];
+  sourceIds?: string[];
+}
+
+export type ResearchResultStatus = typeof ResearchResultStatus[keyof typeof ResearchResultStatus];
+
+
+export const ResearchResultStatus = {
+  pending: 'pending',
+  running: 'running',
+  completed: 'completed',
+  failed: 'failed',
+  cached: 'cached',
+} as const;
+
+export interface ResearchResult {
+  id: string;
+  topic: string;
+  /** @nullable */
+  targetAudience?: string | null;
+  videoLengthMinutes?: number;
+  language?: string;
+  style?: string;
+  tone?: string;
+  status: ResearchResultStatus;
+  /** @nullable */
+  jobId?: string | null;
+  /** @nullable */
+  summary?: string | null;
+  /** @nullable */
+  confidenceScore?: number | null;
+  /** @nullable */
+  estimatedDifficulty?: string | null;
+  sections: ResearchSection[];
+  references: ResearchReference[];
+  keywords: ResearchKeyword[];
+  providers: string[];
+  usedProviders: string[];
+  logs: string[];
+  /** @nullable */
+  errorMessage?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  /** @nullable */
+  completedAt?: string | null;
+}
+
+export interface ResearchList {
+  items: ResearchResult[];
+  total: number;
+}
+
 export type ProjectStatus = typeof ProjectStatus[keyof typeof ProjectStatus];
 
 
@@ -271,6 +364,21 @@ export interface SettingsUpdate {
   notificationsEmail?: string;
   webhookUrl?: string;
 }
+
+export type ListResearchParams = {
+/**
+ * @nullable
+ */
+status?: string | null;
+/**
+ * @nullable
+ */
+limit?: number | null;
+/**
+ * @nullable
+ */
+offset?: number | null;
+};
 
 export type ListProjectsParams = {
 /**

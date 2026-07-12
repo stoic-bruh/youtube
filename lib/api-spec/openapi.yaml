@@ -24,8 +24,88 @@ tags:
     description: Application configuration
   - name: logs
     description: System log access
+  - name: research
+    description: AI research service
 
 paths:
+  # ── Research ──────────────────────────────────────────────────────────────
+  /research:
+    get:
+      operationId: listResearch
+      tags: [research]
+      summary: List research results
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: ["string", "null"]
+        - name: limit
+          in: query
+          schema:
+            type: ["integer", "null"]
+        - name: offset
+          in: query
+          schema:
+            type: ["integer", "null"]
+      responses:
+        "200":
+          description: Research list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResearchList"
+    post:
+      operationId: startResearch
+      tags: [research]
+      summary: Start an async research job
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResearchInput"
+      responses:
+        "202":
+          description: Research job started
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResearchResult"
+
+  /research/{id}:
+    get:
+      operationId: getResearch
+      tags: [research]
+      summary: Get research result by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Research result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResearchResult"
+        "404":
+          description: Not found
+    delete:
+      operationId: deleteResearch
+      tags: [research]
+      summary: Delete a research result
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Deleted
+
   /healthz:
     get:
       operationId: healthCheck
@@ -435,6 +515,113 @@ components:
           type: string
       required:
         - status
+
+    # ── Research ─────────────────────────────────────────────────────────────
+    ResearchInput:
+      type: object
+      required: [topic]
+      properties:
+        topic:             { type: string }
+        targetAudience:    { type: string }
+        videoLengthMinutes: { type: integer }
+        language:          { type: string }
+        style:             { type: string }
+        tone:              { type: string }
+        providers:
+          type: array
+          items: { type: string }
+
+    ResearchKeyword:
+      type: object
+      required: [term, relevance]
+      properties:
+        term:         { type: string }
+        relevance:    { type: number }
+        searchVolume: { type: ["integer", "null"] }
+        difficulty:   { type: ["string", "null"] }
+        semanticTags:
+          type: array
+          items: { type: string }
+
+    ResearchReference:
+      type: object
+      required: [title, url, sourceType, credibilityScore, citationFormat]
+      properties:
+        id:               { type: string }
+        title:            { type: string }
+        url:              { type: string }
+        sourceType:       { type: string }
+        author:           { type: ["string", "null"] }
+        publishedAt:      { type: ["string", "null"] }
+        snippet:          { type: ["string", "null"] }
+        credibilityScore: { type: number }
+        citationFormat:   { type: string }
+        provider:         { type: string }
+
+    ResearchSection:
+      type: object
+      required: [sectionType, title, content, confidence]
+      properties:
+        sectionType:  { type: string }
+        title:        { type: string }
+        content:      { type: string }
+        confidence:   { type: number }
+        items:
+          type: array
+          items: { type: string }
+        sourceIds:
+          type: array
+          items: { type: string }
+
+    ResearchResult:
+      type: object
+      required: [id, topic, status, providers, usedProviders, sections, references, keywords, logs, createdAt, updatedAt]
+      properties:
+        id:                  { type: string }
+        topic:               { type: string }
+        targetAudience:      { type: ["string", "null"] }
+        videoLengthMinutes:  { type: integer }
+        language:            { type: string }
+        style:               { type: string }
+        tone:                { type: string }
+        status:
+          type: string
+          enum: [pending, running, completed, failed, cached]
+        jobId:               { type: ["string", "null"] }
+        summary:             { type: ["string", "null"] }
+        confidenceScore:     { type: ["number", "null"] }
+        estimatedDifficulty: { type: ["string", "null"] }
+        sections:
+          type: array
+          items: { $ref: "#/components/schemas/ResearchSection" }
+        references:
+          type: array
+          items: { $ref: "#/components/schemas/ResearchReference" }
+        keywords:
+          type: array
+          items: { $ref: "#/components/schemas/ResearchKeyword" }
+        providers:
+          type: array
+          items: { type: string }
+        usedProviders:
+          type: array
+          items: { type: string }
+        logs:
+          type: array
+          items: { type: string }
+        errorMessage:  { type: ["string", "null"] }
+        createdAt:     { type: string }
+        updatedAt:     { type: string }
+        completedAt:   { type: ["string", "null"] }
+
+    ResearchList:
+      type: object
+      required: [items, total]
+      properties:
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/ResearchResult" }
+        total: { type: integer }
 
     # ── Project ──────────────────────────────────────────────────────────────
     Project:

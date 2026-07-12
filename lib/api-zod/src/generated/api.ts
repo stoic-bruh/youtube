@@ -9,6 +9,198 @@ import * as zod from 'zod';
 
 
 /**
+ * @summary List research results
+ */
+export const ListResearchQueryParams = zod.object({
+  "status": zod.coerce.string().nullish(),
+  "limit": zod.coerce.number().nullish(),
+  "offset": zod.coerce.number().nullish()
+})
+
+export const ListResearchResponse = zod.object({
+  "items": zod.array(zod.object({
+  "id": zod.string(),
+  "topic": zod.string(),
+  "targetAudience": zod.string().nullish(),
+  "videoLengthMinutes": zod.number().optional(),
+  "language": zod.string().optional(),
+  "style": zod.string().optional(),
+  "tone": zod.string().optional(),
+  "status": zod.enum(['pending', 'running', 'completed', 'failed', 'cached']),
+  "jobId": zod.string().nullish(),
+  "summary": zod.string().nullish(),
+  "confidenceScore": zod.number().nullish(),
+  "estimatedDifficulty": zod.string().nullish(),
+  "sections": zod.array(zod.object({
+  "sectionType": zod.string(),
+  "title": zod.string(),
+  "content": zod.string(),
+  "confidence": zod.number(),
+  "items": zod.array(zod.string()).optional(),
+  "sourceIds": zod.array(zod.string()).optional()
+})),
+  "references": zod.array(zod.object({
+  "id": zod.string().optional(),
+  "title": zod.string(),
+  "url": zod.string(),
+  "sourceType": zod.string(),
+  "author": zod.string().nullish(),
+  "publishedAt": zod.string().nullish(),
+  "snippet": zod.string().nullish(),
+  "credibilityScore": zod.number(),
+  "citationFormat": zod.string(),
+  "provider": zod.string().optional()
+})),
+  "keywords": zod.array(zod.object({
+  "term": zod.string(),
+  "relevance": zod.number(),
+  "searchVolume": zod.number().nullish(),
+  "difficulty": zod.string().nullish(),
+  "semanticTags": zod.array(zod.string()).optional()
+})),
+  "providers": zod.array(zod.string()),
+  "usedProviders": zod.array(zod.string()),
+  "logs": zod.array(zod.string()),
+  "errorMessage": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string(),
+  "completedAt": zod.string().nullish()
+})),
+  "total": zod.number()
+})
+
+
+/**
+ * @summary Start an async research job
+ */
+export const StartResearchBody = zod.object({
+  "topic": zod.string(),
+  "targetAudience": zod.string().optional(),
+  "videoLengthMinutes": zod.number().optional(),
+  "language": zod.string().optional(),
+  "style": zod.string().optional(),
+  "tone": zod.string().optional(),
+  "providers": zod.array(zod.string()).optional()
+})
+
+export const StartResearchResponse = zod.object({
+  "id": zod.string(),
+  "topic": zod.string(),
+  "targetAudience": zod.string().nullish(),
+  "videoLengthMinutes": zod.number().optional(),
+  "language": zod.string().optional(),
+  "style": zod.string().optional(),
+  "tone": zod.string().optional(),
+  "status": zod.enum(['pending', 'running', 'completed', 'failed', 'cached']),
+  "jobId": zod.string().nullish(),
+  "summary": zod.string().nullish(),
+  "confidenceScore": zod.number().nullish(),
+  "estimatedDifficulty": zod.string().nullish(),
+  "sections": zod.array(zod.object({
+  "sectionType": zod.string(),
+  "title": zod.string(),
+  "content": zod.string(),
+  "confidence": zod.number(),
+  "items": zod.array(zod.string()).optional(),
+  "sourceIds": zod.array(zod.string()).optional()
+})),
+  "references": zod.array(zod.object({
+  "id": zod.string().optional(),
+  "title": zod.string(),
+  "url": zod.string(),
+  "sourceType": zod.string(),
+  "author": zod.string().nullish(),
+  "publishedAt": zod.string().nullish(),
+  "snippet": zod.string().nullish(),
+  "credibilityScore": zod.number(),
+  "citationFormat": zod.string(),
+  "provider": zod.string().optional()
+})),
+  "keywords": zod.array(zod.object({
+  "term": zod.string(),
+  "relevance": zod.number(),
+  "searchVolume": zod.number().nullish(),
+  "difficulty": zod.string().nullish(),
+  "semanticTags": zod.array(zod.string()).optional()
+})),
+  "providers": zod.array(zod.string()),
+  "usedProviders": zod.array(zod.string()),
+  "logs": zod.array(zod.string()),
+  "errorMessage": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string(),
+  "completedAt": zod.string().nullish()
+})
+
+
+/**
+ * @summary Get research result by ID
+ */
+export const GetResearchParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const GetResearchResponse = zod.object({
+  "id": zod.string(),
+  "topic": zod.string(),
+  "targetAudience": zod.string().nullish(),
+  "videoLengthMinutes": zod.number().optional(),
+  "language": zod.string().optional(),
+  "style": zod.string().optional(),
+  "tone": zod.string().optional(),
+  "status": zod.enum(['pending', 'running', 'completed', 'failed', 'cached']),
+  "jobId": zod.string().nullish(),
+  "summary": zod.string().nullish(),
+  "confidenceScore": zod.number().nullish(),
+  "estimatedDifficulty": zod.string().nullish(),
+  "sections": zod.array(zod.object({
+  "sectionType": zod.string(),
+  "title": zod.string(),
+  "content": zod.string(),
+  "confidence": zod.number(),
+  "items": zod.array(zod.string()).optional(),
+  "sourceIds": zod.array(zod.string()).optional()
+})),
+  "references": zod.array(zod.object({
+  "id": zod.string().optional(),
+  "title": zod.string(),
+  "url": zod.string(),
+  "sourceType": zod.string(),
+  "author": zod.string().nullish(),
+  "publishedAt": zod.string().nullish(),
+  "snippet": zod.string().nullish(),
+  "credibilityScore": zod.number(),
+  "citationFormat": zod.string(),
+  "provider": zod.string().optional()
+})),
+  "keywords": zod.array(zod.object({
+  "term": zod.string(),
+  "relevance": zod.number(),
+  "searchVolume": zod.number().nullish(),
+  "difficulty": zod.string().nullish(),
+  "semanticTags": zod.array(zod.string()).optional()
+})),
+  "providers": zod.array(zod.string()),
+  "usedProviders": zod.array(zod.string()),
+  "logs": zod.array(zod.string()),
+  "errorMessage": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string(),
+  "completedAt": zod.string().nullish()
+})
+
+
+/**
+ * @summary Delete a research result
+ */
+export const DeleteResearchParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const DeleteResearchResponse = zod.void()
+
+
+/**
  * @summary Health check
  */
 export const HealthCheckResponse = zod.object({

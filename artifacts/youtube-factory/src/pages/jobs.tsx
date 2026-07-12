@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useListJobs, useRetryJob, useCancelJob } from "@workspace/api-client-react";
+import { useListJobs, useRetryJob, useCancelJob, getListJobsQueryKey } from "@workspace/api-client-react";
 import { Card } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { StatusBadge } from "@/components/status-badge";
@@ -15,7 +15,7 @@ export default function Jobs() {
   
   const { data: jobsData, isLoading, refetch } = useListJobs(
     { limit: 100, status: statusFilter === "all" ? undefined : statusFilter },
-    { query: { refetchInterval: 5000 } }
+    { query: { queryKey: getListJobsQueryKey({ limit: 50 }), refetchInterval: 5000 } }
   );
 
   const retryJob = useRetryJob();

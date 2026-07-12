@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { useListLogs } from "@workspace/api-client-react";
+import { useListLogs, getListLogsQueryKey } from "@workspace/api-client-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -18,7 +18,7 @@ export default function Logs() {
       level: level === "all" ? undefined : level,
       service: service === "all" ? undefined : service 
     },
-    { query: { refetchInterval: isPaused ? false : 2000 } }
+    { query: { queryKey: getListLogsQueryKey({ limit: 100 }), refetchInterval: isPaused ? false : 2000 } }
   );
 
   // Auto-scroll to bottom unless paused

@@ -1,9 +1,10 @@
 import { Link, useLocation } from "wouter";
-import { Activity, LayoutDashboard, ListTree, Settings, Terminal, Video } from "lucide-react";
+import { Activity, LayoutDashboard, ListTree, Settings, Terminal, Video, Microscope } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/research", label: "Research", icon: Microscope },
   { href: "/projects", label: "Projects", icon: Video },
   { href: "/pipelines", label: "Pipelines", icon: Activity },
   { href: "/jobs", label: "Job Queue", icon: ListTree },

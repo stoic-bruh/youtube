@@ -12,6 +12,7 @@ import Pipelines from '@/pages/pipelines';
 import Jobs from '@/pages/jobs';
 import Logs from '@/pages/logs';
 import SettingsPage from '@/pages/settings';
+import ResearchPage from '@/pages/research';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -27,6 +28,7 @@ function Router() {
     <Shell>
       <Switch>
         <Route path="/" component={Dashboard} />
+        <Route path="/research" component={ResearchPage} />
         <Route path="/projects" component={Projects} />
         <Route path="/projects/:id" component={ProjectDetail} />
         <Route path="/pipelines" component={Pipelines} />

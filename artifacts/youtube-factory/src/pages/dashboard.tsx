@@ -1,11 +1,11 @@
-import { useGetDashboardStats, useGetPipelineActivity } from "@workspace/api-client-react";
+import { useGetDashboardStats, useGetPipelineActivity, getGetDashboardStatsQueryKey } from "@workspace/api-client-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Activity, Clock, AlertTriangle, CheckCircle2, Film } from "lucide-react";
 import { StatusBadge } from "@/components/status-badge";
 import { Link } from "wouter";
 
 export default function Dashboard() {
-  const { data: stats, isLoading: statsLoading } = useGetDashboardStats({ query: { refetchInterval: 5000 } });
+  const { data: stats, isLoading: statsLoading } = useGetDashboardStats({ query: { queryKey: getGetDashboardStatsQueryKey(), refetchInterval: 5000 } });
   
   // Fallback mock data if API is empty
   const s = stats || {

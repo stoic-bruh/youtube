@@ -1,4 +1,4 @@
-import { useListPipelines } from "@workspace/api-client-react";
+import { useListPipelines, getListPipelinesQueryKey } from "@workspace/api-client-react";
 import { Card } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { StatusBadge } from "@/components/status-badge";
@@ -9,8 +9,8 @@ import { cn } from "@/lib/utils";
 
 export default function Pipelines() {
   const { data: pipelineData, isLoading } = useListPipelines(
-    { limit: 50 }, 
-    { query: { refetchInterval: 3000 } }
+    {}, 
+    { query: { queryKey: getListPipelinesQueryKey({}), refetchInterval: 3000 } }
   );
 
   const pipelines = pipelineData?.items || [
