@@ -7,6 +7,9 @@ import {
   useDeleteVoice,
   useGetVoiceProviderStats,
   useListScripts,
+  getListVoicesQueryKey,
+  getGetVoiceQueryKey,
+  getGetVoiceProviderStatsQueryKey,
   type VoiceResult,
   type VoiceSectionAudio,
   type VoiceProviderStats,
@@ -465,10 +468,21 @@ export default function VoicesPage() {
   const [providerOrder, setProviderOrder] = useState<string[]>(["openai-tts", "elevenlabs"]);
   const [statsTab, setStatsTab] = useState<"library" | "providers">("library");
 
-  // Voice Library — list of all generated narrations
-  const { data: voicesData, isLoading: listLoading } = useListVoices(
-    scriptFilter && scriptFilter !== "all" ? { scriptId: scriptFilter, limit: 100 } : { limit: 100 },
-  );
+  const listParams = scriptFilter && scriptFilter !== "all" ? { scriptId: scriptFilter, limit: 100 } : { limit: 100 };
+
+  // Voice Library — list of all generated narrations. Polls while any job is
+  // pending/running so async status transitions (pending -> running ->
+  // completed/failed) surface without a manual refresh.
+  const { data: voicesData, isLoading: listLoading } = useListVoices(listParams, {
+    query: {
+      refetchInterval: (query: { state: { data?: { items?: VoiceResult[] } } }) => {
+        const items = query.state.data?.items ?? [];
+        const hasActive = items.some((v) => v.status === "pending" || v.status === "running");
+        return hasActive ? 1500 : false;
+      },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } as any,
+  });
 
   // Voice Browser filter source — completed scripts available for narration
   const { data: scriptsData } = useListScripts({ limit: 100 });
@@ -476,15 +490,25 @@ export default function VoicesPage() {
   // Provider Statistics
   const { data: providerStatsData, isLoading: providerStatsLoading } = useGetVoiceProviderStats();
 
+  const selectedIsActive = useMemo(() => {
+    const items = (voicesData?.items ?? []) as VoiceResult[];
+    const v = items.find((x) => x.id === selectedId);
+    return v ? v.status === "pending" || v.status === "running" : false;
+  }, [voicesData, selectedId]);
+
   const { data: selectedVoice } = useGetVoice(selectedId ?? "", {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    query: { enabled: !!selectedId } as any,
+    query: {
+      enabled: !!selectedId,
+      refetchInterval: selectedIsActive ? 1500 : false,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } as any,
   });
 
   const startMutation = useStartVoice({
     mutation: {
       onSuccess: (data) => {
-        qc.invalidateQueries({ queryKey: ["voices"] });
+        qc.invalidateQueries({ queryKey: getListVoicesQueryKey(listParams) });
+        qc.invalidateQueries({ queryKey: getGetVoiceProviderStatsQueryKey() });
         setSelectedId((data as VoiceResult).id);
       },
     },
@@ -493,8 +517,11 @@ export default function VoicesPage() {
   const deleteMutation = useDeleteVoice({
     mutation: {
       onSuccess: (_data, variables) => {
-        qc.invalidateQueries({ queryKey: ["voices"] });
-        if (selectedId === (variables as { id: string }).id) setSelectedId(null);
+        qc.invalidateQueries({ queryKey: getListVoicesQueryKey(listParams) });
+        qc.invalidateQueries({ queryKey: getGetVoiceProviderStatsQueryKey() });
+        const deletedId = (variables as { id: string }).id;
+        qc.removeQueries({ queryKey: getGetVoiceQueryKey(deletedId) });
+        if (selectedId === deletedId) setSelectedId(null);
       },
     },
   });
@@ -535,8 +562,9 @@ export default function VoicesPage() {
             variant="ghost"
             size="sm"
             onClick={() => {
-              qc.invalidateQueries({ queryKey: ["voices"] });
-              qc.invalidateQueries({ queryKey: ["voices", "providers", "stats"] });
+              qc.invalidateQueries({ queryKey: getListVoicesQueryKey(listParams) });
+              qc.invalidateQueries({ queryKey: getGetVoiceProviderStatsQueryKey() });
+              if (selectedId) qc.invalidateQueries({ queryKey: getGetVoiceQueryKey(selectedId) });
             }}
           >
             <RefreshCw className="h-4 w-4" />
