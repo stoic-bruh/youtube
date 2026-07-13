@@ -17,6 +17,7 @@ import ScriptsPage from '@/pages/scripts';
 import StoryboardsPage from '@/pages/storyboards';
 import AssetsPage from '@/pages/assets';
 import TimelinesPage from '@/pages/timelines';
+import VoicesPage from '@/pages/voices';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -37,6 +38,7 @@ function Router() {
         <Route path="/storyboards" component={StoryboardsPage} />
         <Route path="/assets" component={AssetsPage} />
         <Route path="/timelines" component={TimelinesPage} />
+        <Route path="/voices" component={VoicesPage} />
         <Route path="/projects" component={Projects} />
         <Route path="/projects/:id" component={ProjectDetail} />
         <Route path="/pipelines" component={Pipelines} />

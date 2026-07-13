@@ -1218,6 +1218,179 @@ export const DeleteScriptResponse = zod.void()
 
 
 /**
+ * @summary List voice (narration) generation results
+ */
+export const ListVoicesQueryParams = zod.object({
+  "scriptId": zod.coerce.string().nullish(),
+  "status": zod.coerce.string().nullish(),
+  "limit": zod.coerce.number().nullish(),
+  "offset": zod.coerce.number().nullish()
+})
+
+export const ListVoicesResponse = zod.object({
+  "items": zod.array(zod.object({
+  "id": zod.string(),
+  "scriptId": zod.string(),
+  "status": zod.enum(['pending', 'running', 'completed', 'failed', 'cached']),
+  "voiceId": zod.string(),
+  "speed": zod.number().optional(),
+  "language": zod.string().optional(),
+  "sections": zod.array(zod.object({
+  "sectionIndex": zod.number(),
+  "sectionTitle": zod.string(),
+  "text": zod.string(),
+  "startMs": zod.number(),
+  "endMs": zod.number(),
+  "durationMs": zod.number(),
+  "wordCount": zod.number().optional(),
+  "localPath": zod.string(),
+  "sampleRate": zod.number().optional()
+})),
+  "totalDurationMs": zod.number().nullish(),
+  "wordCount": zod.number().nullish(),
+  "sampleRate": zod.number().nullish(),
+  "audioFormat": zod.string().nullish(),
+  "normalized": zod.boolean().optional(),
+  "targetLoudnessLufs": zod.number().optional(),
+  "costUsd": zod.number().nullish(),
+  "usedProvider": zod.string().nullish(),
+  "providers": zod.array(zod.string()),
+  "jobId": zod.string().nullish(),
+  "logs": zod.array(zod.string()),
+  "errorMessage": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string(),
+  "completedAt": zod.string().nullish()
+})),
+  "total": zod.number()
+})
+
+
+/**
+ * @summary Start a narration (TTS) generation job for a script
+ */
+export const startVoiceBodySpeedMin = 0.5;
+export const startVoiceBodySpeedMax = 2;
+
+
+
+export const StartVoiceBody = zod.object({
+  "scriptId": zod.string(),
+  "voiceId": zod.string().optional(),
+  "speed": zod.number().min(startVoiceBodySpeedMin).max(startVoiceBodySpeedMax).optional(),
+  "language": zod.string().optional(),
+  "targetLoudnessLufs": zod.number().optional(),
+  "providers": zod.array(zod.enum(['openai-tts', 'elevenlabs'])).optional()
+})
+
+export const StartVoiceResponse = zod.object({
+  "id": zod.string(),
+  "scriptId": zod.string(),
+  "status": zod.enum(['pending', 'running', 'completed', 'failed', 'cached']),
+  "voiceId": zod.string(),
+  "speed": zod.number().optional(),
+  "language": zod.string().optional(),
+  "sections": zod.array(zod.object({
+  "sectionIndex": zod.number(),
+  "sectionTitle": zod.string(),
+  "text": zod.string(),
+  "startMs": zod.number(),
+  "endMs": zod.number(),
+  "durationMs": zod.number(),
+  "wordCount": zod.number().optional(),
+  "localPath": zod.string(),
+  "sampleRate": zod.number().optional()
+})),
+  "totalDurationMs": zod.number().nullish(),
+  "wordCount": zod.number().nullish(),
+  "sampleRate": zod.number().nullish(),
+  "audioFormat": zod.string().nullish(),
+  "normalized": zod.boolean().optional(),
+  "targetLoudnessLufs": zod.number().optional(),
+  "costUsd": zod.number().nullish(),
+  "usedProvider": zod.string().nullish(),
+  "providers": zod.array(zod.string()),
+  "jobId": zod.string().nullish(),
+  "logs": zod.array(zod.string()),
+  "errorMessage": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string(),
+  "completedAt": zod.string().nullish()
+})
+
+
+/**
+ * @summary Get a voice result by ID
+ */
+export const GetVoiceParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const GetVoiceResponse = zod.object({
+  "id": zod.string(),
+  "scriptId": zod.string(),
+  "status": zod.enum(['pending', 'running', 'completed', 'failed', 'cached']),
+  "voiceId": zod.string(),
+  "speed": zod.number().optional(),
+  "language": zod.string().optional(),
+  "sections": zod.array(zod.object({
+  "sectionIndex": zod.number(),
+  "sectionTitle": zod.string(),
+  "text": zod.string(),
+  "startMs": zod.number(),
+  "endMs": zod.number(),
+  "durationMs": zod.number(),
+  "wordCount": zod.number().optional(),
+  "localPath": zod.string(),
+  "sampleRate": zod.number().optional()
+})),
+  "totalDurationMs": zod.number().nullish(),
+  "wordCount": zod.number().nullish(),
+  "sampleRate": zod.number().nullish(),
+  "audioFormat": zod.string().nullish(),
+  "normalized": zod.boolean().optional(),
+  "targetLoudnessLufs": zod.number().optional(),
+  "costUsd": zod.number().nullish(),
+  "usedProvider": zod.string().nullish(),
+  "providers": zod.array(zod.string()),
+  "jobId": zod.string().nullish(),
+  "logs": zod.array(zod.string()),
+  "errorMessage": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string(),
+  "completedAt": zod.string().nullish()
+})
+
+
+/**
+ * @summary Delete a voice record
+ */
+export const DeleteVoiceParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const DeleteVoiceResponse = zod.void()
+
+
+/**
+ * @summary Aggregate usage/success statistics per voice provider
+ */
+export const GetVoiceProviderStatsResponse = zod.object({
+  "items": zod.array(zod.object({
+  "providerName": zod.string(),
+  "isEnabled": zod.boolean(),
+  "totalRequests": zod.number(),
+  "successfulRequests": zod.number(),
+  "failedRequests": zod.number(),
+  "avgLatencyMs": zod.number().nullish(),
+  "avgCostUsd": zod.number().nullish(),
+  "totalCostUsd": zod.number(),
+  "totalDurationMsGenerated": zod.number().optional()
+}))
+})
+
+
+/**
  * @summary Health check
  */
 export const HealthCheckResponse = zod.object({

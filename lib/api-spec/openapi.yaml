@@ -32,6 +32,8 @@ tags:
     description: Asset Intelligence Engine — image/video/icon acquisition
   - name: timelines
     description: Media Timeline Engine — merge Storyboard + Assets into production timeline
+  - name: voices
+    description: Voice Engine — narration audio generation from scripts
 
 paths:
   # ── Research ──────────────────────────────────────────────────────────────
@@ -458,6 +460,101 @@ paths:
       responses:
         "204":
           description: Deleted
+
+  # ── Voices ────────────────────────────────────────────────────────────────
+  /voices:
+    get:
+      operationId: listVoices
+      tags: [voices]
+      summary: List voice (narration) generation results
+      parameters:
+        - name: scriptId
+          in: query
+          schema:
+            type: ["string", "null"]
+        - name: status
+          in: query
+          schema:
+            type: ["string", "null"]
+        - name: limit
+          in: query
+          schema:
+            type: ["integer", "null"]
+        - name: offset
+          in: query
+          schema:
+            type: ["integer", "null"]
+      responses:
+        "200":
+          description: Voice list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VoiceList"
+    post:
+      operationId: startVoice
+      tags: [voices]
+      summary: Start a narration (TTS) generation job for a script
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VoiceInput"
+      responses:
+        "202":
+          description: Voice generation accepted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VoiceResult"
+
+  /voices/{id}:
+    get:
+      operationId: getVoice
+      tags: [voices]
+      summary: Get a voice result by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Voice result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VoiceResult"
+        "404":
+          description: Not found
+    delete:
+      operationId: deleteVoice
+      tags: [voices]
+      summary: Delete a voice record
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Deleted
+
+  /voices/providers/stats:
+    get:
+      operationId: getVoiceProviderStats
+      tags: [voices]
+      summary: Aggregate usage/success statistics per voice provider
+      responses:
+        "200":
+          description: Provider statistics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VoiceProviderStatsList"
 
   /healthz:
     get:
@@ -1567,6 +1664,102 @@ components:
         items:
           type: array
           items: { $ref: "#/components/schemas/AssetProviderStats" }
+
+    # ── Voices ───────────────────────────────────────────────────────────────
+    VoiceInput:
+      type: object
+      required: [scriptId]
+      properties:
+        scriptId:   { type: string }
+        voiceId:    { type: string }
+        speed:      { type: number, minimum: 0.5, maximum: 2.0 }
+        language:   { type: string }
+        targetLoudnessLufs: { type: number }
+        providers:
+          type: array
+          items:
+            type: string
+            enum: [openai-tts, elevenlabs]
+
+    VoiceSectionAudio:
+      type: object
+      required: [sectionIndex, sectionTitle, text, startMs, endMs, durationMs, localPath]
+      properties:
+        sectionIndex:  { type: integer }
+        sectionTitle:  { type: string }
+        text:          { type: string }
+        startMs:       { type: integer }
+        endMs:         { type: integer }
+        durationMs:    { type: integer }
+        wordCount:     { type: integer }
+        localPath:     { type: string }
+        sampleRate:    { type: integer }
+
+    VoiceResult:
+      type: object
+      required: [id, scriptId, status, voiceId, sections, providers, logs, createdAt, updatedAt]
+      properties:
+        id:              { type: string }
+        scriptId:        { type: string }
+        status:
+          type: string
+          enum: [pending, running, completed, failed, cached]
+        voiceId:         { type: string }
+        speed:           { type: number }
+        language:        { type: string }
+        sections:
+          type: array
+          items: { $ref: "#/components/schemas/VoiceSectionAudio" }
+        totalDurationMs: { type: ["integer", "null"] }
+        wordCount:       { type: ["integer", "null"] }
+        sampleRate:      { type: ["integer", "null"] }
+        audioFormat:     { type: ["string", "null"] }
+        normalized:      { type: boolean }
+        targetLoudnessLufs: { type: number }
+        costUsd:         { type: ["number", "null"] }
+        usedProvider:    { type: ["string", "null"] }
+        providers:
+          type: array
+          items: { type: string }
+        jobId:           { type: ["string", "null"] }
+        logs:
+          type: array
+          items: { type: string }
+        errorMessage:    { type: ["string", "null"] }
+        createdAt:       { type: string }
+        updatedAt:       { type: string }
+        completedAt:     { type: ["string", "null"] }
+
+    VoiceList:
+      type: object
+      required: [items, total]
+      properties:
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/VoiceResult" }
+        total: { type: integer }
+
+    VoiceProviderStats:
+      type: object
+      required: [providerName, isEnabled, totalRequests, successfulRequests, failedRequests, totalCostUsd]
+      properties:
+        providerName:       { type: string }
+        isEnabled:           { type: boolean }
+        totalRequests:       { type: integer }
+        successfulRequests:  { type: integer }
+        failedRequests:      { type: integer }
+        avgLatencyMs:        { type: ["number", "null"] }
+        avgCostUsd:          { type: ["number", "null"] }
+        totalCostUsd:        { type: number }
+        totalDurationMsGenerated: { type: integer }
+
+    VoiceProviderStatsList:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/VoiceProviderStats" }
 
     # ── Timelines ────────────────────────────────────────────────────────────
     TimelineInput:

@@ -825,6 +825,107 @@ export interface AssetProviderStatsList {
   items: AssetProviderStats[];
 }
 
+export type VoiceInputProvidersItem = typeof VoiceInputProvidersItem[keyof typeof VoiceInputProvidersItem];
+
+
+export const VoiceInputProvidersItem = {
+  'openai-tts': 'openai-tts',
+  elevenlabs: 'elevenlabs',
+} as const;
+
+export interface VoiceInput {
+  scriptId: string;
+  voiceId?: string;
+  /**
+     * @minimum 0.5
+     * @maximum 2
+     */
+  speed?: number;
+  language?: string;
+  targetLoudnessLufs?: number;
+  providers?: VoiceInputProvidersItem[];
+}
+
+export interface VoiceSectionAudio {
+  sectionIndex: number;
+  sectionTitle: string;
+  text: string;
+  startMs: number;
+  endMs: number;
+  durationMs: number;
+  wordCount?: number;
+  localPath: string;
+  sampleRate?: number;
+}
+
+export type VoiceResultStatus = typeof VoiceResultStatus[keyof typeof VoiceResultStatus];
+
+
+export const VoiceResultStatus = {
+  pending: 'pending',
+  running: 'running',
+  completed: 'completed',
+  failed: 'failed',
+  cached: 'cached',
+} as const;
+
+export interface VoiceResult {
+  id: string;
+  scriptId: string;
+  status: VoiceResultStatus;
+  voiceId: string;
+  speed?: number;
+  language?: string;
+  sections: VoiceSectionAudio[];
+  /** @nullable */
+  totalDurationMs?: number | null;
+  /** @nullable */
+  wordCount?: number | null;
+  /** @nullable */
+  sampleRate?: number | null;
+  /** @nullable */
+  audioFormat?: string | null;
+  normalized?: boolean;
+  targetLoudnessLufs?: number;
+  /** @nullable */
+  costUsd?: number | null;
+  /** @nullable */
+  usedProvider?: string | null;
+  providers: string[];
+  /** @nullable */
+  jobId?: string | null;
+  logs: string[];
+  /** @nullable */
+  errorMessage?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  /** @nullable */
+  completedAt?: string | null;
+}
+
+export interface VoiceList {
+  items: VoiceResult[];
+  total: number;
+}
+
+export interface VoiceProviderStats {
+  providerName: string;
+  isEnabled: boolean;
+  totalRequests: number;
+  successfulRequests: number;
+  failedRequests: number;
+  /** @nullable */
+  avgLatencyMs?: number | null;
+  /** @nullable */
+  avgCostUsd?: number | null;
+  totalCostUsd: number;
+  totalDurationMsGenerated?: number;
+}
+
+export interface VoiceProviderStatsList {
+  items: VoiceProviderStats[];
+}
+
 export type TimelineInputRenderFormat = typeof TimelineInputRenderFormat[keyof typeof TimelineInputRenderFormat];
 
 
@@ -1067,6 +1168,25 @@ offset?: number | null;
 };
 
 export type ListScriptsParams = {
+/**
+ * @nullable
+ */
+status?: string | null;
+/**
+ * @nullable
+ */
+limit?: number | null;
+/**
+ * @nullable
+ */
+offset?: number | null;
+};
+
+export type ListVoicesParams = {
+/**
+ * @nullable
+ */
+scriptId?: string | null;
 /**
  * @nullable
  */
