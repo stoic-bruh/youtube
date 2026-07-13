@@ -320,7 +320,7 @@ class TimelineService:
             timeline.scenes = [s.model_dump() for s in tl_scenes]
             timeline.markers = [m.model_dump() for m in markers]
             timeline.render_plan = render_plan.model_dump()
-            timeline.metadata = metadata.model_dump()
+            timeline.timeline_metadata = metadata.model_dump()
             timeline.validation_errors = validation_errors
             timeline.status = TimelineStatus.COMPLETED.value
             timeline.completed_at = datetime.now(timezone.utc)

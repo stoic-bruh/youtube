@@ -88,8 +88,8 @@ def _to_api(t: TimelineResult) -> TimelineResultSchema:
         )
 
     metadata = None
-    if t.metadata and isinstance(t.metadata, dict):
-        metadata = TimelineMetadata(**t.metadata)
+    if t.timeline_metadata and isinstance(t.timeline_metadata, dict):
+        metadata = TimelineMetadata(**t.timeline_metadata)
 
     return TimelineResultSchema(
         id=t.id,

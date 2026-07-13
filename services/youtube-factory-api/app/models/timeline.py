@@ -35,7 +35,10 @@ class TimelineResult(Base):
     scenes: Mapped[list] = mapped_column(JSON, nullable=False, default=list)
     markers: Mapped[list] = mapped_column(JSON, nullable=False, default=list)
     render_plan: Mapped[dict] = mapped_column(JSON, nullable=False, default=dict)
-    metadata: Mapped[dict] = mapped_column(JSON, nullable=False, default=dict)
+    # NOTE: attribute name can't be `metadata` — SQLAlchemy's Declarative API
+    # reserves that name for `Base.metadata`. The underlying column stays
+    # named "metadata" to match the Drizzle schema / API contract.
+    timeline_metadata: Mapped[dict] = mapped_column("metadata", JSON, nullable=False, default=dict)
     validation_errors: Mapped[list] = mapped_column(JSON, nullable=False, default=list)
 
     logs: Mapped[list] = mapped_column(JSON, nullable=False, default=list)

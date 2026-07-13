@@ -15,7 +15,7 @@ import logging
 import time
 import uuid
 from datetime import datetime, timezone
-from typing import Sequence
+from typing import Any, Sequence
 
 from app.models.script_result import ScriptResult
 from app.providers.script.registry import ScriptProviderRegistry
@@ -31,6 +31,12 @@ from app.schemas.script import (
 )
 
 logger = logging.getLogger(__name__)
+
+# Compatibility alias: several placeholder downstream services (ScenePlanner,
+# VoiceGenerator, SEOGenerator, ThumbnailGenerator) type-hint against a
+# `Script` type that predates the real `ScriptResult` ORM model. Keep it
+# importable here so those untouched placeholder modules keep working.
+Script = Any
 
 _CACHE_ENABLED = True
 _MIN_CONFIDENCE = 0.4
