@@ -550,3 +550,192 @@ limit?: number | null;
 offset?: number | null;
 };
 
+// ── Storyboard types ───────────────────────────────────────────────────────────
+
+export interface StoryboardScenePrompt {
+  image_prompt: string;
+  negative_prompt?: string;
+  video_prompt?: string;
+  style_preset?: string;
+}
+
+export interface StoryboardSubtitleTiming {
+  start_ms: number;
+  end_ms: number;
+  text: string;
+  speaker?: string | null;
+}
+
+export interface StoryboardAsset {
+  asset_type: string;
+  description: string;
+  is_required?: boolean;
+  source_type?: string;
+  search_query?: string | null;
+}
+
+export interface StoryboardAnimationInstruction {
+  element: string;
+  animation_type: string;
+  duration_ms?: number;
+  delay_ms?: number;
+  easing?: string;
+}
+
+export interface StoryboardScene {
+  scene_number: number;
+  scene_title: string;
+  start_time_ms: number;
+  end_time_ms: number;
+  duration_ms: number;
+  narration: string;
+  visual_description: string;
+  visual_type?: string;
+  prompts: StoryboardScenePrompt;
+  shot_type?: string;
+  camera_angle?: string;
+  camera_movement?: string;
+  /** @nullable */
+  zoom_instructions?: string | null;
+  /** @nullable */
+  pan_instructions?: string | null;
+  animation_suggestions?: StoryboardAnimationInstruction[];
+  transition_type?: string;
+  transition_duration_ms?: number;
+  scene_emotion?: string;
+  color_palette?: string[];
+  lighting_style?: string;
+  background_description?: string;
+  foreground_description?: string;
+  characters?: string[];
+  objects?: string[];
+  text_overlay_suggestions?: string[];
+  /** @nullable */
+  subtitle_timing?: StoryboardSubtitleTiming | null;
+  sound_effect_suggestions?: string[];
+  background_music_mood?: string;
+  b_roll_suggestions?: string[];
+  stock_footage_suggestions?: string[];
+  asset_requirements?: StoryboardAsset[];
+  importance_score?: number;
+  estimated_image_count?: number;
+  estimated_video_length_seconds?: number;
+}
+
+export interface StoryboardSceneTimeline {
+  scene_number: number;
+  scene_title: string;
+  start_time_ms: number;
+  end_time_ms: number;
+  duration_ms: number;
+  shot_type: string;
+  transition_type: string;
+  visual_type: string;
+  importance_score: number;
+}
+
+export interface StoryboardNarrationTiming {
+  scene_number: number;
+  scene_title: string;
+  start_ms: number;
+  end_ms: number;
+  wpm: number;
+  word_count: number;
+  speaker_note?: string | null;
+}
+
+export interface StoryboardVisualCue {
+  time_ms: number;
+  cue_type: string;
+  description: string;
+  scene_number: number;
+  duration_ms?: number;
+}
+
+export type StoryboardResultStatus = typeof StoryboardResultStatus[keyof typeof StoryboardResultStatus];
+
+export const StoryboardResultStatus = {
+  pending: 'pending',
+  running: 'running',
+  completed: 'completed',
+  failed: 'failed',
+  cached: 'cached',
+} as const;
+
+export interface StoryboardInput {
+  /** @nullable */
+  scriptId?: string | null;
+  /** @nullable */
+  researchId?: string | null;
+  topic: string;
+  scriptStyle?: string;
+  scriptTone?: string;
+  targetDurationMinutes?: number;
+  targetAudience?: string;
+  language?: string;
+  providers?: string[];
+}
+
+export interface StoryboardResult {
+  id: string;
+  /** @nullable */
+  scriptId?: string | null;
+  /** @nullable */
+  researchId?: string | null;
+  topic: string;
+  /** @nullable */
+  title?: string | null;
+  status: StoryboardResultStatus;
+  scriptStyle?: string;
+  scriptTone?: string;
+  targetDurationMinutes?: number;
+  targetAudience?: string;
+  language?: string;
+  version?: number;
+  scenes: StoryboardScene[];
+  sceneTimeline?: StoryboardSceneTimeline[];
+  narrationTiming?: StoryboardNarrationTiming[];
+  visualCues?: StoryboardVisualCue[];
+  /** @nullable */
+  totalDurationSeconds?: number | null;
+  /** @nullable */
+  sceneCount?: number | null;
+  /** @nullable */
+  imageCount?: number | null;
+  /** @nullable */
+  editingComplexityScore?: number | null;
+  /** @nullable */
+  estimatedRenderTimeMinutes?: number | null;
+  /** @nullable */
+  estimatedCostUsd?: number | null;
+  /** @nullable */
+  visualPacing?: string | null;
+  /** @nullable */
+  narrationPacing?: string | null;
+  providers: string[];
+  usedProviders: string[];
+  /** @nullable */
+  jobId?: string | null;
+  logs: string[];
+  /** @nullable */
+  errorMessage?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  /** @nullable */
+  completedAt?: string | null;
+}
+
+export interface StoryboardList {
+  items: StoryboardResult[];
+  total: number;
+}
+
+export type ListStoryboardsParams = {
+/** @nullable */
+status?: string | null;
+/** @nullable */
+limit?: number | null;
+/** @nullable */
+offset?: number | null;
+};
+

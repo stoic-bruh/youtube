@@ -5,3 +5,4 @@ export * from "./logs";
 export * from "./settings";
 export * from "./research";
 export * from "./scripts";
+export * from "./storyboards";

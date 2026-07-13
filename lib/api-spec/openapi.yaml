@@ -108,6 +108,84 @@ paths:
         "204":
           description: Deleted
 
+  # ── Storyboards ────────────────────────────────────────────────────────────
+  /storyboards:
+    get:
+      operationId: listStoryboards
+      tags: [storyboards]
+      summary: List storyboard results
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: ["string", "null"]
+        - name: limit
+          in: query
+          schema:
+            type: ["integer", "null"]
+        - name: offset
+          in: query
+          schema:
+            type: ["integer", "null"]
+      responses:
+        "200":
+          description: Storyboard list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StoryboardList"
+    post:
+      operationId: startStoryboard
+      tags: [storyboards]
+      summary: Start an async storyboard-generation job
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StoryboardInput"
+      responses:
+        "202":
+          description: Storyboard job accepted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StoryboardResult"
+
+  /storyboards/{id}:
+    get:
+      operationId: getStoryboard
+      tags: [storyboards]
+      summary: Get storyboard result by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Storyboard result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StoryboardResult"
+        "404":
+          description: Not found
+    delete:
+      operationId: deleteStoryboard
+      tags: [storyboards]
+      summary: Delete a storyboard result
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Deleted
+
   # ── Scripts ───────────────────────────────────────────────────────────────
   /scripts:
     get:
@@ -1058,4 +1136,126 @@ components:
         items:
           type: array
           items: { $ref: "#/components/schemas/ScriptResult" }
+        total: { type: integer }
+
+    # ── Storyboards ────────────────────────────────────────────────────────────
+    StoryboardScene:
+      type: object
+      required: [scene_number, scene_title, start_time_ms, end_time_ms, duration_ms, narration, visual_description, prompts]
+      properties:
+        scene_number:              { type: integer }
+        scene_title:               { type: string }
+        start_time_ms:             { type: integer }
+        end_time_ms:               { type: integer }
+        duration_ms:               { type: integer }
+        narration:                 { type: string }
+        visual_description:        { type: string }
+        visual_type:               { type: string }
+        prompts:                   { type: object }
+        shot_type:                 { type: string }
+        camera_angle:              { type: string }
+        camera_movement:           { type: string }
+        zoom_instructions:         { type: ["string", "null"] }
+        pan_instructions:          { type: ["string", "null"] }
+        animation_suggestions:     { type: array, items: { type: object } }
+        transition_type:           { type: string }
+        transition_duration_ms:    { type: integer }
+        scene_emotion:             { type: string }
+        color_palette:             { type: array, items: { type: string } }
+        lighting_style:            { type: string }
+        background_description:    { type: string }
+        foreground_description:    { type: string }
+        characters:                { type: array, items: { type: string } }
+        objects:                   { type: array, items: { type: string } }
+        text_overlay_suggestions:  { type: array, items: { type: string } }
+        subtitle_timing:           { type: ["object", "null"] }
+        sound_effect_suggestions:  { type: array, items: { type: string } }
+        background_music_mood:     { type: string }
+        b_roll_suggestions:        { type: array, items: { type: string } }
+        stock_footage_suggestions: { type: array, items: { type: string } }
+        asset_requirements:        { type: array, items: { type: object } }
+        importance_score:          { type: number }
+        estimated_image_count:     { type: integer }
+        estimated_video_length_seconds: { type: number }
+
+    StoryboardInput:
+      type: object
+      required: [topic]
+      properties:
+        scriptId:               { type: ["string", "null"] }
+        researchId:             { type: ["string", "null"] }
+        topic:                  { type: string, minLength: 3, maxLength: 500 }
+        scriptStyle:
+          type: string
+          enum: [educational, documentary, storytelling, tutorial, news, long_form, shorts]
+        scriptTone:
+          type: string
+          enum: [engaging, authoritative, casual, inspirational, conversational]
+        targetDurationMinutes:  { type: integer, minimum: 1, maximum: 120 }
+        targetAudience:         { type: string }
+        language:               { type: string }
+        providers:
+          type: array
+          items: { type: string }
+
+    StoryboardResult:
+      type: object
+      required: [id, topic, status, providers, usedProviders, scenes, logs, createdAt, updatedAt]
+      properties:
+        id:                          { type: string }
+        scriptId:                    { type: ["string", "null"] }
+        researchId:                  { type: ["string", "null"] }
+        topic:                       { type: string }
+        title:                       { type: ["string", "null"] }
+        status:
+          type: string
+          enum: [pending, running, completed, failed, cached]
+        scriptStyle:                 { type: string }
+        scriptTone:                  { type: string }
+        targetDurationMinutes:       { type: integer }
+        targetAudience:              { type: string }
+        language:                    { type: string }
+        version:                     { type: integer }
+        scenes:
+          type: array
+          items: { $ref: "#/components/schemas/StoryboardScene" }
+        sceneTimeline:
+          type: array
+          items: { type: object }
+        narrationTiming:
+          type: array
+          items: { type: object }
+        visualCues:
+          type: array
+          items: { type: object }
+        totalDurationSeconds:         { type: ["integer", "null"] }
+        sceneCount:                   { type: ["integer", "null"] }
+        imageCount:                   { type: ["integer", "null"] }
+        editingComplexityScore:       { type: ["number", "null"] }
+        estimatedRenderTimeMinutes:   { type: ["integer", "null"] }
+        estimatedCostUsd:             { type: ["number", "null"] }
+        visualPacing:                 { type: ["string", "null"] }
+        narrationPacing:              { type: ["string", "null"] }
+        providers:
+          type: array
+          items: { type: string }
+        usedProviders:
+          type: array
+          items: { type: string }
+        jobId:          { type: ["string", "null"] }
+        logs:
+          type: array
+          items: { type: string }
+        errorMessage:   { type: ["string", "null"] }
+        createdAt:      { type: string }
+        updatedAt:      { type: string }
+        completedAt:    { type: ["string", "null"] }
+
+    StoryboardList:
+      type: object
+      required: [items, total]
+      properties:
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/StoryboardResult" }
         total: { type: integer }
