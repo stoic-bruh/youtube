@@ -1,0 +1,325 @@
+Analyze the entire repository before making any changes.
+
+Current Project Status
+
+✅ Production architecture complete
+
+✅ Infrastructure complete
+
+✅ Research Service complete
+
+✅ Script Service complete
+
+✅ Storyboard Service complete and production-ready
+
+DO NOT regenerate or refactor completed modules.
+
+Preserve the architecture.
+
+Do not modify Research, Script, or Storyboard except for compilation fixes.
+
+========================================================
+
+Implement ONLY the Asset Intelligence Engine.
+
+The Asset Engine is responsible for acquiring every visual asset required by the Storyboard.
+
+It does NOT simply generate images.
+
+It intelligently decides where every asset should come from.
+
+========================================================
+
+FIRST
+
+Audit the repository.
+
+Determine:
+
+- Existing placeholders
+- Existing asset interfaces
+- Existing providers
+- Missing files
+- Missing APIs
+- Missing schemas
+- Missing frontend pages
+- Missing database models
+
+Produce a short audit.
+
+Only then begin implementation.
+
+========================================================
+
+Implement
+
+AssetService
+
+AssetRepository
+
+AssetProvider
+
+AssetCache
+
+AssetSearchEngine
+
+AssetGenerator
+
+AssetDownloader
+
+AssetMetadata
+
+AssetResult
+
+AssetCollection
+
+========================================================
+
+Each Storyboard Scene should request assets through this engine.
+
+Each Asset should contain:
+
+Asset ID
+
+Scene ID
+
+Asset Type
+
+(Image, Video, SVG, Chart, Map, Icon)
+
+Provider
+
+Provider Asset ID
+
+Source URL
+
+License
+
+Prompt
+
+Negative Prompt
+
+Generation Parameters
+
+Width
+
+Height
+
+Aspect Ratio
+
+Status
+
+Cost Estimate
+
+Generation Time
+
+File Size
+
+Local Cache Path
+
+Thumbnail Path
+
+Tags
+
+Quality Score
+
+Relevance Score
+
+========================================================
+
+Implement Provider Interfaces
+
+Image Providers
+
+- FLUX
+- Stable Diffusion XL
+- GPT Image
+- Gemini Image
+- Ideogram
+
+Stock Image Providers
+
+- Wikimedia Commons
+- Unsplash
+- Pixabay
+- Pexels
+
+Stock Video Providers
+
+- Pexels Videos
+- Pixabay Videos
+- Mixkit
+
+Graphics Providers
+
+- Lucide Icons
+- Heroicons
+- Material Icons
+
+Implement providers as interfaces with mock implementations.
+
+Do NOT require API keys.
+
+========================================================
+
+Asset Decision Engine
+
+Given a Storyboard Scene:
+
+1. Search Local Cache
+
+2. Search Wikimedia
+
+3. Search Pexels
+
+4. Search Pixabay
+
+5. Search Unsplash
+
+If acceptable asset exists:
+
+Download
+
+Store metadata
+
+Cache
+
+Return Asset
+
+Otherwise:
+
+Generate AI Image
+
+Store metadata
+
+Cache
+
+Return Asset
+
+========================================================
+
+Database
+
+Create:
+
+Assets table
+
+Asset Cache table
+
+Provider Metadata table
+
+========================================================
+
+Backend
+
+Implement:
+
+SQLAlchemy models
+
+Repositories
+
+FastAPI endpoints
+
+Celery tasks
+
+Provider registry
+
+OpenAPI
+
+Generated API client
+
+Node.js routes
+
+========================================================
+
+Frontend
+
+Create an Asset Library page.
+
+Include:
+
+Asset Browser
+
+Search
+
+Filters
+
+Scene Filter
+
+Provider Filter
+
+Preview Panel
+
+Generation Queue
+
+Download Status
+
+Cache Status
+
+Provider Statistics
+
+Asset Metadata
+
+========================================================
+
+Testing
+
+Write comprehensive unit tests.
+
+Run:
+
+Python tests
+
+TypeScript typecheck
+
+Frontend build
+
+Backend build
+
+API smoke tests
+
+========================================================
+
+IMPORTANT
+
+Prioritize backend implementation before frontend polish.
+
+If quota becomes low:
+
+Complete
+
+- Models
+
+- Database
+
+- Repository
+
+- Provider interfaces
+
+- Asset decision engine
+
+- API
+
+- Celery
+
+before frontend work.
+
+Do NOT begin:
+
+Voice Engine
+
+Video Editor
+
+Subtitle Engine
+
+Thumbnail Engine
+
+SEO Engine
+
+Upload Engine
+
+Analytics
+
+Agent Orchestrator
+
+Stop after the Asset Intelligence Engine is production-ready.

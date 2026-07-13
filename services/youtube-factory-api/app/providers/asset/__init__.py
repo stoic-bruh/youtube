@@ -1,0 +1,1 @@
+"""Asset provider package."""

@@ -26,3 +26,6 @@ router.include_router(jobs.router, prefix="/jobs", tags=["jobs"])
 router.include_router(analytics.router, prefix="/analytics", tags=["analytics"])
 router.include_router(logs.router, prefix="/logs", tags=["logs"])
 router.include_router(settings.router, prefix="/settings", tags=["settings"])
+
+from app.api.v1.endpoints import assets  # noqa: E402
+router.include_router(assets.router, tags=["assets"])
