@@ -1,0 +1,1 @@
+- [YouTube Factory pipeline conventions](youtube-factory-pipeline.md) — provider/service/repo layering pattern, and a systemic pre-existing FastAPI DELETE bug affecting the whole router.
