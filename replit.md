@@ -88,6 +88,15 @@ All services in `services/youtube-factory-api/app/services/`:
 
 _Populate as you build — explicit user instructions worth remembering across sessions._
 
+## Environment setup status
+
+Verified working on 2026-07-13:
+- `pnpm install` — all 9 workspace packages installed (root `node_modules` was stale from image import; `pnpm install --force` fixed missing `vite`/`esbuild` binaries).
+- `uv sync` — Python deps for `services/youtube-factory-api` installed (52 packages).
+- `pnpm --filter @workspace/db run push` — Drizzle schema pushed to the Replit-managed Postgres `DATABASE_URL`; this must be re-run any time the schema changes or on a fresh DB.
+- Workflows confirmed running clean with no errors: `artifacts/youtube-factory: web` (Vite dev server), `artifacts/api-server: API Server` (Express, port from build+start), `artifacts/mockup-sandbox: Component Preview Server`.
+- Dashboard screenshot confirmed the frontend loads and calls `/api/analytics/dashboard` successfully after the DB push (previously 500'd with `relation "projects" does not exist`).
+
 ## Gotchas
 
 - `pnpm add` at the root installs to root only. Use `pnpm --filter @workspace/<pkg> add <dep>` for package-specific deps.
