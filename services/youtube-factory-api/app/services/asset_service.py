@@ -206,7 +206,7 @@ class AssetService:
         await self._log(asset, f"{_ts()} INFO  No stock asset found — generating with AI")
         await self._set_status(asset, AssetStatus.GENERATING)
 
-        gen_providers = self._registry.get_generator_providers()
+        gen_providers = self._registry.get_generator_providers(request.provider_preference)
         if not gen_providers:
             await self._fail(asset, "No generation providers available")
             return

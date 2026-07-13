@@ -28,6 +28,8 @@ tags:
     description: AI research service
   - name: scripts
     description: AI script generation service
+  - name: assets
+    description: Asset Intelligence Engine — image/video/icon acquisition
 
 paths:
   # ── Research ──────────────────────────────────────────────────────────────
@@ -185,6 +187,113 @@ paths:
       responses:
         "204":
           description: Deleted
+
+  # ── Assets ────────────────────────────────────────────────────────────────
+  /assets:
+    get:
+      operationId: listAssets
+      tags: [assets]
+      summary: List asset results
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: ["integer", "null"]
+        - name: offset
+          in: query
+          schema:
+            type: ["integer", "null"]
+        - name: storyboardId
+          in: query
+          schema:
+            type: ["string", "null"]
+        - name: sceneId
+          in: query
+          schema:
+            type: ["string", "null"]
+        - name: status
+          in: query
+          schema:
+            type: ["string", "null"]
+        - name: assetKind
+          in: query
+          schema:
+            type: ["string", "null"]
+        - name: provider
+          in: query
+          schema:
+            type: ["string", "null"]
+      responses:
+        "200":
+          description: Asset list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AssetList"
+    post:
+      operationId: acquireAssets
+      tags: [assets]
+      summary: Enqueue asset acquisition for a storyboard
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AssetInput"
+      responses:
+        "202":
+          description: Asset acquisition queued
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AssetAcquireResponse"
+
+  /assets/{id}:
+    get:
+      operationId: getAsset
+      tags: [assets]
+      summary: Get asset result by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Asset result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AssetResult"
+        "404":
+          description: Not found
+    delete:
+      operationId: deleteAsset
+      tags: [assets]
+      summary: Delete an asset result
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Deleted
+
+  /assets/providers:
+    get:
+      operationId: listAssetProviders
+      tags: [assets]
+      summary: List asset provider statistics
+      responses:
+        "200":
+          description: Provider statistics list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AssetProviderStatsList"
 
   # ── Scripts ───────────────────────────────────────────────────────────────
   /scripts:
@@ -1092,7 +1201,7 @@ components:
           type: array
           items: { $ref: "#/components/schemas/ScriptSection" }
         wordCount:               { type: ["integer", "null"] }
-        estimatedDurationSeconds:{ type: ["integer", "null"] }
+        estimatedDurationSeconds: { type: ["integer", "null"] }
         readingTimeSeconds:      { type: ["integer", "null"] }
         sceneCount:              { type: ["integer", "null"] }
         pacingWpm:               { type: ["number", "null"] }
@@ -1259,3 +1368,116 @@ components:
           type: array
           items: { $ref: "#/components/schemas/StoryboardResult" }
         total: { type: integer }
+
+    # ── Asset ────────────────────────────────────────────────────────────────
+    AssetInput:
+      type: object
+      required: [storyboardId]
+      properties:
+        storyboardId:  { type: string }
+        sceneIds:
+          type: array
+          items: { type: string }
+          description: Empty = all scenes in the storyboard
+        assetKinds:
+          type: array
+          items:
+            type: string
+            enum: [image, video, svg, chart, map, icon]
+        providers:
+          type: array
+          items: { type: string }
+          description: Ordered preference list — stock providers searched first, then generation
+        forceGenerate: { type: boolean }
+
+    AssetResult:
+      type: object
+      required: [id, storyboardId, sceneId, assetKind, status, license, tags, logs, createdAt, updatedAt]
+      properties:
+        id:                  { type: string }
+        storyboardId:        { type: string }
+        sceneId:             { type: string }
+        assetKind:
+          type: string
+          enum: [image, video, svg, chart, map, icon]
+        provider:            { type: ["string", "null"] }
+        providerAssetId:     { type: ["string", "null"] }
+        sourceUrl:           { type: ["string", "null"] }
+        license:
+          type: string
+          enum: [public_domain, cc0, cc_by, cc_by_sa, commercial, generated, mit, unknown]
+        prompt:              { type: ["string", "null"] }
+        negativePrompt:      { type: ["string", "null"] }
+        generationParameters:
+          type: object
+          additionalProperties: {}
+        width:               { type: ["integer", "null"] }
+        height:              { type: ["integer", "null"] }
+        aspectRatio:         { type: ["string", "null"] }
+        status:
+          type: string
+          enum: [pending, searching, downloading, generating, ready, failed, cached]
+        costEstimateUsd:     { type: ["number", "null"] }
+        generationTimeMs:    { type: ["integer", "null"] }
+        fileSizeBytes:       { type: ["integer", "null"] }
+        localCachePath:      { type: ["string", "null"] }
+        thumbnailPath:       { type: ["string", "null"] }
+        tags:
+          type: array
+          items: { type: string }
+        qualityScore:        { type: ["number", "null"] }
+        relevanceScore:      { type: ["number", "null"] }
+        logs:
+          type: array
+          items: { type: string }
+        errorMessage:        { type: ["string", "null"] }
+        createdAt:           { type: string }
+        updatedAt:           { type: string }
+        completedAt:         { type: ["string", "null"] }
+
+    AssetList:
+      type: object
+      required: [items, total]
+      properties:
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/AssetResult" }
+        total: { type: integer }
+
+    AssetAcquireResponse:
+      type: object
+      required: [items, total, message]
+      properties:
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/AssetResult" }
+        total:   { type: integer }
+        message: { type: string }
+
+    AssetProviderStats:
+      type: object
+      required: [providerName, providerType, isEnabled, totalRequests, successfulRequests, failedRequests, cacheHits, totalCostUsd]
+      properties:
+        providerName:       { type: string }
+        providerType:
+          type: string
+          enum: [stock, generate, icon]
+        isEnabled:           { type: boolean }
+        totalRequests:       { type: integer }
+        successfulRequests:  { type: integer }
+        failedRequests:      { type: integer }
+        avgLatencyMs:        { type: ["number", "null"] }
+        avgCostUsd:          { type: ["number", "null"] }
+        totalCostUsd:        { type: number }
+        cacheHits:           { type: integer }
+        supportedKinds:
+          type: array
+          items: { type: string }
+
+    AssetProviderStatsList:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/AssetProviderStats" }

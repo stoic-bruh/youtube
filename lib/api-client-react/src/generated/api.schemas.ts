@@ -365,7 +365,528 @@ export interface SettingsUpdate {
   webhookUrl?: string;
 }
 
+export type ScriptInputStyle = typeof ScriptInputStyle[keyof typeof ScriptInputStyle];
+
+
+export const ScriptInputStyle = {
+  educational: 'educational',
+  documentary: 'documentary',
+  storytelling: 'storytelling',
+  tutorial: 'tutorial',
+  news: 'news',
+  long_form: 'long_form',
+  shorts: 'shorts',
+} as const;
+
+export type ScriptInputTone = typeof ScriptInputTone[keyof typeof ScriptInputTone];
+
+
+export const ScriptInputTone = {
+  engaging: 'engaging',
+  authoritative: 'authoritative',
+  casual: 'casual',
+  inspirational: 'inspirational',
+  conversational: 'conversational',
+} as const;
+
+export interface ScriptInput {
+  /** @nullable */
+  researchId?: string | null;
+  /**
+     * @minLength 3
+     * @maxLength 500
+     */
+  topic: string;
+  style?: ScriptInputStyle;
+  tone?: ScriptInputTone;
+  language?: string;
+  targetAudience?: string;
+  /**
+     * @minimum 1
+     * @maximum 120
+     */
+  targetDurationMinutes?: number;
+  providers?: string[];
+}
+
+export interface ScriptSection {
+  sectionType: string;
+  title: string;
+  content: string;
+  wordCount?: number;
+  durationSeconds?: number;
+  order?: number;
+  /** @nullable */
+  transitionIn?: string | null;
+  /** @nullable */
+  transitionOut?: string | null;
+  /** @nullable */
+  storytellingNotes?: string | null;
+  /** @nullable */
+  visualSuggestion?: string | null;
+}
+
+export type ScriptResultStatus = typeof ScriptResultStatus[keyof typeof ScriptResultStatus];
+
+
+export const ScriptResultStatus = {
+  pending: 'pending',
+  running: 'running',
+  completed: 'completed',
+  failed: 'failed',
+  cached: 'cached',
+} as const;
+
+export type ScriptResultNarrationTimingItem = { [key: string]: unknown };
+
+export type ScriptResultEmphasisMarkersItem = { [key: string]: unknown };
+
+export type ScriptResultPausesItem = { [key: string]: unknown };
+
+export type ScriptResultPronunciationHintsItem = { [key: string]: unknown };
+
+export type ScriptResultVisualCuesItem = { [key: string]: unknown };
+
+export type ScriptResultVersionsItem = { [key: string]: unknown };
+
+export interface ScriptResult {
+  id: string;
+  /** @nullable */
+  researchId?: string | null;
+  topic: string;
+  /** @nullable */
+  title?: string | null;
+  status: ScriptResultStatus;
+  style?: string;
+  tone?: string;
+  language?: string;
+  targetAudience?: string;
+  targetDurationMinutes?: number;
+  version?: number;
+  /** @nullable */
+  hook?: string | null;
+  /** @nullable */
+  introduction?: string | null;
+  /** @nullable */
+  outro?: string | null;
+  /** @nullable */
+  callToAction?: string | null;
+  sections: ScriptSection[];
+  /** @nullable */
+  wordCount?: number | null;
+  /** @nullable */
+  estimatedDurationSeconds?: number | null;
+  /** @nullable */
+  readingTimeSeconds?: number | null;
+  /** @nullable */
+  sceneCount?: number | null;
+  /** @nullable */
+  pacingWpm?: number | null;
+  narrationTiming?: ScriptResultNarrationTimingItem[];
+  emphasisMarkers?: ScriptResultEmphasisMarkersItem[];
+  pauses?: ScriptResultPausesItem[];
+  pronunciationHints?: ScriptResultPronunciationHintsItem[];
+  visualCues?: ScriptResultVisualCuesItem[];
+  versions?: ScriptResultVersionsItem[];
+  providers: string[];
+  usedProviders: string[];
+  /** @nullable */
+  jobId?: string | null;
+  logs: string[];
+  /** @nullable */
+  errorMessage?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  /** @nullable */
+  completedAt?: string | null;
+}
+
+export interface ScriptList {
+  items: ScriptResult[];
+  total: number;
+}
+
+export type StoryboardScenePrompts = { [key: string]: unknown };
+
+export type StoryboardSceneAnimationSuggestionsItem = { [key: string]: unknown };
+
+/**
+ * @nullable
+ */
+export type StoryboardSceneSubtitleTiming = { [key: string]: unknown } | null;
+
+export type StoryboardSceneAssetRequirementsItem = { [key: string]: unknown };
+
+export interface StoryboardScene {
+  scene_number: number;
+  scene_title: string;
+  start_time_ms: number;
+  end_time_ms: number;
+  duration_ms: number;
+  narration: string;
+  visual_description: string;
+  visual_type?: string;
+  prompts: StoryboardScenePrompts;
+  shot_type?: string;
+  camera_angle?: string;
+  camera_movement?: string;
+  /** @nullable */
+  zoom_instructions?: string | null;
+  /** @nullable */
+  pan_instructions?: string | null;
+  animation_suggestions?: StoryboardSceneAnimationSuggestionsItem[];
+  transition_type?: string;
+  transition_duration_ms?: number;
+  scene_emotion?: string;
+  color_palette?: string[];
+  lighting_style?: string;
+  background_description?: string;
+  foreground_description?: string;
+  characters?: string[];
+  objects?: string[];
+  text_overlay_suggestions?: string[];
+  /** @nullable */
+  subtitle_timing?: StoryboardSceneSubtitleTiming;
+  sound_effect_suggestions?: string[];
+  background_music_mood?: string;
+  b_roll_suggestions?: string[];
+  stock_footage_suggestions?: string[];
+  asset_requirements?: StoryboardSceneAssetRequirementsItem[];
+  importance_score?: number;
+  estimated_image_count?: number;
+  estimated_video_length_seconds?: number;
+}
+
+export type StoryboardInputScriptStyle = typeof StoryboardInputScriptStyle[keyof typeof StoryboardInputScriptStyle];
+
+
+export const StoryboardInputScriptStyle = {
+  educational: 'educational',
+  documentary: 'documentary',
+  storytelling: 'storytelling',
+  tutorial: 'tutorial',
+  news: 'news',
+  long_form: 'long_form',
+  shorts: 'shorts',
+} as const;
+
+export type StoryboardInputScriptTone = typeof StoryboardInputScriptTone[keyof typeof StoryboardInputScriptTone];
+
+
+export const StoryboardInputScriptTone = {
+  engaging: 'engaging',
+  authoritative: 'authoritative',
+  casual: 'casual',
+  inspirational: 'inspirational',
+  conversational: 'conversational',
+} as const;
+
+export interface StoryboardInput {
+  /** @nullable */
+  scriptId?: string | null;
+  /** @nullable */
+  researchId?: string | null;
+  /**
+     * @minLength 3
+     * @maxLength 500
+     */
+  topic: string;
+  scriptStyle?: StoryboardInputScriptStyle;
+  scriptTone?: StoryboardInputScriptTone;
+  /**
+     * @minimum 1
+     * @maximum 120
+     */
+  targetDurationMinutes?: number;
+  targetAudience?: string;
+  language?: string;
+  providers?: string[];
+}
+
+export type StoryboardResultStatus = typeof StoryboardResultStatus[keyof typeof StoryboardResultStatus];
+
+
+export const StoryboardResultStatus = {
+  pending: 'pending',
+  running: 'running',
+  completed: 'completed',
+  failed: 'failed',
+  cached: 'cached',
+} as const;
+
+export type StoryboardResultSceneTimelineItem = { [key: string]: unknown };
+
+export type StoryboardResultNarrationTimingItem = { [key: string]: unknown };
+
+export type StoryboardResultVisualCuesItem = { [key: string]: unknown };
+
+export interface StoryboardResult {
+  id: string;
+  /** @nullable */
+  scriptId?: string | null;
+  /** @nullable */
+  researchId?: string | null;
+  topic: string;
+  /** @nullable */
+  title?: string | null;
+  status: StoryboardResultStatus;
+  scriptStyle?: string;
+  scriptTone?: string;
+  targetDurationMinutes?: number;
+  targetAudience?: string;
+  language?: string;
+  version?: number;
+  scenes: StoryboardScene[];
+  sceneTimeline?: StoryboardResultSceneTimelineItem[];
+  narrationTiming?: StoryboardResultNarrationTimingItem[];
+  visualCues?: StoryboardResultVisualCuesItem[];
+  /** @nullable */
+  totalDurationSeconds?: number | null;
+  /** @nullable */
+  sceneCount?: number | null;
+  /** @nullable */
+  imageCount?: number | null;
+  /** @nullable */
+  editingComplexityScore?: number | null;
+  /** @nullable */
+  estimatedRenderTimeMinutes?: number | null;
+  /** @nullable */
+  estimatedCostUsd?: number | null;
+  /** @nullable */
+  visualPacing?: string | null;
+  /** @nullable */
+  narrationPacing?: string | null;
+  providers: string[];
+  usedProviders: string[];
+  /** @nullable */
+  jobId?: string | null;
+  logs: string[];
+  /** @nullable */
+  errorMessage?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  /** @nullable */
+  completedAt?: string | null;
+}
+
+export interface StoryboardList {
+  items: StoryboardResult[];
+  total: number;
+}
+
+export type AssetInputAssetKindsItem = typeof AssetInputAssetKindsItem[keyof typeof AssetInputAssetKindsItem];
+
+
+export const AssetInputAssetKindsItem = {
+  image: 'image',
+  video: 'video',
+  svg: 'svg',
+  chart: 'chart',
+  map: 'map',
+  icon: 'icon',
+} as const;
+
+export interface AssetInput {
+  storyboardId: string;
+  /** Empty = all scenes in the storyboard */
+  sceneIds?: string[];
+  assetKinds?: AssetInputAssetKindsItem[];
+  /** Ordered preference list — stock providers searched first, then generation */
+  providers?: string[];
+  forceGenerate?: boolean;
+}
+
+export type AssetResultAssetKind = typeof AssetResultAssetKind[keyof typeof AssetResultAssetKind];
+
+
+export const AssetResultAssetKind = {
+  image: 'image',
+  video: 'video',
+  svg: 'svg',
+  chart: 'chart',
+  map: 'map',
+  icon: 'icon',
+} as const;
+
+export type AssetResultLicense = typeof AssetResultLicense[keyof typeof AssetResultLicense];
+
+
+export const AssetResultLicense = {
+  public_domain: 'public_domain',
+  cc0: 'cc0',
+  cc_by: 'cc_by',
+  cc_by_sa: 'cc_by_sa',
+  commercial: 'commercial',
+  generated: 'generated',
+  mit: 'mit',
+  unknown: 'unknown',
+} as const;
+
+export type AssetResultGenerationParameters = {[key: string]: unknown};
+
+export type AssetResultStatus = typeof AssetResultStatus[keyof typeof AssetResultStatus];
+
+
+export const AssetResultStatus = {
+  pending: 'pending',
+  searching: 'searching',
+  downloading: 'downloading',
+  generating: 'generating',
+  ready: 'ready',
+  failed: 'failed',
+  cached: 'cached',
+} as const;
+
+export interface AssetResult {
+  id: string;
+  storyboardId: string;
+  sceneId: string;
+  assetKind: AssetResultAssetKind;
+  /** @nullable */
+  provider?: string | null;
+  /** @nullable */
+  providerAssetId?: string | null;
+  /** @nullable */
+  sourceUrl?: string | null;
+  license: AssetResultLicense;
+  /** @nullable */
+  prompt?: string | null;
+  /** @nullable */
+  negativePrompt?: string | null;
+  generationParameters?: AssetResultGenerationParameters;
+  /** @nullable */
+  width?: number | null;
+  /** @nullable */
+  height?: number | null;
+  /** @nullable */
+  aspectRatio?: string | null;
+  status: AssetResultStatus;
+  /** @nullable */
+  costEstimateUsd?: number | null;
+  /** @nullable */
+  generationTimeMs?: number | null;
+  /** @nullable */
+  fileSizeBytes?: number | null;
+  /** @nullable */
+  localCachePath?: string | null;
+  /** @nullable */
+  thumbnailPath?: string | null;
+  tags: string[];
+  /** @nullable */
+  qualityScore?: number | null;
+  /** @nullable */
+  relevanceScore?: number | null;
+  logs: string[];
+  /** @nullable */
+  errorMessage?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  /** @nullable */
+  completedAt?: string | null;
+}
+
+export interface AssetList {
+  items: AssetResult[];
+  total: number;
+}
+
+export interface AssetAcquireResponse {
+  items: AssetResult[];
+  total: number;
+  message: string;
+}
+
+export type AssetProviderStatsProviderType = typeof AssetProviderStatsProviderType[keyof typeof AssetProviderStatsProviderType];
+
+
+export const AssetProviderStatsProviderType = {
+  stock: 'stock',
+  generate: 'generate',
+  icon: 'icon',
+} as const;
+
+export interface AssetProviderStats {
+  providerName: string;
+  providerType: AssetProviderStatsProviderType;
+  isEnabled: boolean;
+  totalRequests: number;
+  successfulRequests: number;
+  failedRequests: number;
+  /** @nullable */
+  avgLatencyMs?: number | null;
+  /** @nullable */
+  avgCostUsd?: number | null;
+  totalCostUsd: number;
+  cacheHits: number;
+  supportedKinds?: string[];
+}
+
+export interface AssetProviderStatsList {
+  items: AssetProviderStats[];
+}
+
 export type ListResearchParams = {
+/**
+ * @nullable
+ */
+status?: string | null;
+/**
+ * @nullable
+ */
+limit?: number | null;
+/**
+ * @nullable
+ */
+offset?: number | null;
+};
+
+export type ListStoryboardsParams = {
+/**
+ * @nullable
+ */
+status?: string | null;
+/**
+ * @nullable
+ */
+limit?: number | null;
+/**
+ * @nullable
+ */
+offset?: number | null;
+};
+
+export type ListAssetsParams = {
+/**
+ * @nullable
+ */
+limit?: number | null;
+/**
+ * @nullable
+ */
+offset?: number | null;
+/**
+ * @nullable
+ */
+storyboardId?: string | null;
+/**
+ * @nullable
+ */
+sceneId?: string | null;
+/**
+ * @nullable
+ */
+status?: string | null;
+/**
+ * @nullable
+ */
+assetKind?: string | null;
+/**
+ * @nullable
+ */
+provider?: string | null;
+};
+
+export type ListScriptsParams = {
 /**
  * @nullable
  */
@@ -441,301 +962,5 @@ service?: string | null;
  * @nullable
  */
 limit?: number | null;
-};
-
-// ── Script types ──────────────────────────────────────────────────────────────
-
-export interface ScriptInput {
-  /** @nullable */
-  researchId?: string | null;
-  topic: string;
-  style?: string;
-  tone?: string;
-  language?: string;
-  targetAudience?: string;
-  targetDurationMinutes?: number;
-  providers?: string[];
-}
-
-export interface ScriptSection {
-  sectionType: string;
-  title: string;
-  content: string;
-  wordCount?: number;
-  durationSeconds?: number;
-  order?: number;
-  /** @nullable */
-  transitionIn?: string | null;
-  /** @nullable */
-  transitionOut?: string | null;
-  /** @nullable */
-  storytellingNotes?: string | null;
-  /** @nullable */
-  visualSuggestion?: string | null;
-}
-
-export type ScriptResultStatus = typeof ScriptResultStatus[keyof typeof ScriptResultStatus];
-
-export const ScriptResultStatus = {
-  pending: 'pending',
-  running: 'running',
-  completed: 'completed',
-  failed: 'failed',
-  cached: 'cached',
-} as const;
-
-export interface ScriptResult {
-  id: string;
-  /** @nullable */
-  researchId?: string | null;
-  topic: string;
-  /** @nullable */
-  title?: string | null;
-  status: ScriptResultStatus;
-  style?: string;
-  tone?: string;
-  language?: string;
-  targetAudience?: string;
-  targetDurationMinutes?: number;
-  version?: number;
-  /** @nullable */
-  hook?: string | null;
-  /** @nullable */
-  introduction?: string | null;
-  /** @nullable */
-  outro?: string | null;
-  /** @nullable */
-  callToAction?: string | null;
-  sections: ScriptSection[];
-  /** @nullable */
-  wordCount?: number | null;
-  /** @nullable */
-  estimatedDurationSeconds?: number | null;
-  /** @nullable */
-  readingTimeSeconds?: number | null;
-  /** @nullable */
-  sceneCount?: number | null;
-  /** @nullable */
-  pacingWpm?: number | null;
-  narrationTiming?: object[];
-  emphasisMarkers?: object[];
-  pauses?: object[];
-  pronunciationHints?: object[];
-  visualCues?: object[];
-  versions?: object[];
-  providers: string[];
-  usedProviders: string[];
-  /** @nullable */
-  jobId?: string | null;
-  logs: string[];
-  /** @nullable */
-  errorMessage?: string | null;
-  createdAt: string;
-  updatedAt: string;
-  /** @nullable */
-  completedAt?: string | null;
-}
-
-export interface ScriptList {
-  items: ScriptResult[];
-  total: number;
-}
-
-export type ListScriptsParams = {
-/** @nullable */
-status?: string | null;
-/** @nullable */
-limit?: number | null;
-/** @nullable */
-offset?: number | null;
-};
-
-// ── Storyboard types ───────────────────────────────────────────────────────────
-
-export interface StoryboardScenePrompt {
-  image_prompt: string;
-  negative_prompt?: string;
-  video_prompt?: string;
-  style_preset?: string;
-}
-
-export interface StoryboardSubtitleTiming {
-  start_ms: number;
-  end_ms: number;
-  text: string;
-  speaker?: string | null;
-}
-
-export interface StoryboardAsset {
-  asset_type: string;
-  description: string;
-  is_required?: boolean;
-  source_type?: string;
-  search_query?: string | null;
-}
-
-export interface StoryboardAnimationInstruction {
-  element: string;
-  animation_type: string;
-  duration_ms?: number;
-  delay_ms?: number;
-  easing?: string;
-}
-
-export interface StoryboardScene {
-  scene_number: number;
-  scene_title: string;
-  start_time_ms: number;
-  end_time_ms: number;
-  duration_ms: number;
-  narration: string;
-  visual_description: string;
-  visual_type?: string;
-  prompts: StoryboardScenePrompt;
-  shot_type?: string;
-  camera_angle?: string;
-  camera_movement?: string;
-  /** @nullable */
-  zoom_instructions?: string | null;
-  /** @nullable */
-  pan_instructions?: string | null;
-  animation_suggestions?: StoryboardAnimationInstruction[];
-  transition_type?: string;
-  transition_duration_ms?: number;
-  scene_emotion?: string;
-  color_palette?: string[];
-  lighting_style?: string;
-  background_description?: string;
-  foreground_description?: string;
-  characters?: string[];
-  objects?: string[];
-  text_overlay_suggestions?: string[];
-  /** @nullable */
-  subtitle_timing?: StoryboardSubtitleTiming | null;
-  sound_effect_suggestions?: string[];
-  background_music_mood?: string;
-  b_roll_suggestions?: string[];
-  stock_footage_suggestions?: string[];
-  asset_requirements?: StoryboardAsset[];
-  importance_score?: number;
-  estimated_image_count?: number;
-  estimated_video_length_seconds?: number;
-}
-
-export interface StoryboardSceneTimeline {
-  scene_number: number;
-  scene_title: string;
-  start_time_ms: number;
-  end_time_ms: number;
-  duration_ms: number;
-  shot_type: string;
-  transition_type: string;
-  visual_type: string;
-  importance_score: number;
-}
-
-export interface StoryboardNarrationTiming {
-  scene_number: number;
-  scene_title: string;
-  start_ms: number;
-  end_ms: number;
-  wpm: number;
-  word_count: number;
-  speaker_note?: string | null;
-}
-
-export interface StoryboardVisualCue {
-  time_ms: number;
-  cue_type: string;
-  description: string;
-  scene_number: number;
-  duration_ms?: number;
-}
-
-export type StoryboardResultStatus = typeof StoryboardResultStatus[keyof typeof StoryboardResultStatus];
-
-export const StoryboardResultStatus = {
-  pending: 'pending',
-  running: 'running',
-  completed: 'completed',
-  failed: 'failed',
-  cached: 'cached',
-} as const;
-
-export interface StoryboardInput {
-  /** @nullable */
-  scriptId?: string | null;
-  /** @nullable */
-  researchId?: string | null;
-  topic: string;
-  scriptStyle?: string;
-  scriptTone?: string;
-  targetDurationMinutes?: number;
-  targetAudience?: string;
-  language?: string;
-  providers?: string[];
-}
-
-export interface StoryboardResult {
-  id: string;
-  /** @nullable */
-  scriptId?: string | null;
-  /** @nullable */
-  researchId?: string | null;
-  topic: string;
-  /** @nullable */
-  title?: string | null;
-  status: StoryboardResultStatus;
-  scriptStyle?: string;
-  scriptTone?: string;
-  targetDurationMinutes?: number;
-  targetAudience?: string;
-  language?: string;
-  version?: number;
-  scenes: StoryboardScene[];
-  sceneTimeline?: StoryboardSceneTimeline[];
-  narrationTiming?: StoryboardNarrationTiming[];
-  visualCues?: StoryboardVisualCue[];
-  /** @nullable */
-  totalDurationSeconds?: number | null;
-  /** @nullable */
-  sceneCount?: number | null;
-  /** @nullable */
-  imageCount?: number | null;
-  /** @nullable */
-  editingComplexityScore?: number | null;
-  /** @nullable */
-  estimatedRenderTimeMinutes?: number | null;
-  /** @nullable */
-  estimatedCostUsd?: number | null;
-  /** @nullable */
-  visualPacing?: string | null;
-  /** @nullable */
-  narrationPacing?: string | null;
-  providers: string[];
-  usedProviders: string[];
-  /** @nullable */
-  jobId?: string | null;
-  logs: string[];
-  /** @nullable */
-  errorMessage?: string | null;
-  createdAt: string;
-  updatedAt: string;
-  /** @nullable */
-  completedAt?: string | null;
-}
-
-export interface StoryboardList {
-  items: StoryboardResult[];
-  total: number;
-}
-
-export type ListStoryboardsParams = {
-/** @nullable */
-status?: string | null;
-/** @nullable */
-limit?: number | null;
-/** @nullable */
-offset?: number | null;
 };
 

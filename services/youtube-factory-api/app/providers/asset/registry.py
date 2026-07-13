@@ -93,15 +93,28 @@ class AssetProviderRegistry:
             names = []
         return [p for name in names if (p := self.get(name)) is not None]
 
-    def get_generator_providers(self) -> list[AssetProvider]:
-        """Return AI image-generation providers in quality order."""
-        names = [
+    def get_generator_providers(
+        self, provider_preference: list | None = None
+    ) -> list[AssetProvider]:
+        """Return AI image-generation providers.
+
+        If `provider_preference` is supplied, generator providers named in it are tried
+        first (in the given order), followed by any remaining generators in default
+        quality order. Without a preference, falls back to the default quality order.
+        """
+        default_order = [
             AssetProviderName.FLUX,
             AssetProviderName.SDXL,
             AssetProviderName.GPT_IMAGE,
             AssetProviderName.GEMINI_IMAGE,
             AssetProviderName.IDEOGRAM,
         ]
+        if not provider_preference:
+            names = default_order
+        else:
+            preferred = [n for n in provider_preference if n in _GENERATOR_PROVIDERS]
+            remaining = [n for n in default_order if n not in preferred]
+            names = preferred + remaining
         return [p for name in names if (p := self.get(name)) is not None]
 
     def is_generator(self, name: str) -> bool:

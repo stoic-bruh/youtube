@@ -4,8 +4,9 @@ from __future__ import annotations
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.v1.endpoints.research import get_db
-from app.models.asset import AssetResult
+from app.core.database import get_db
+from app.models.asset import AssetProviderMetadata, AssetResult
+from app.repositories.asset_repository import AssetProviderMetadataRepository
 from app.schemas.asset import (
     AssetKind,
     AssetLicense,
@@ -18,6 +19,57 @@ from app.schemas.asset import (
 from app.services.asset_service import AssetService
 
 router = APIRouter(prefix="/assets", tags=["assets"])
+
+# Provider type, by name — used to build zeroed defaults before any run has happened.
+_PROVIDER_TYPES: dict[str, str] = {
+    AssetProviderName.FLUX.value: "generate",
+    AssetProviderName.SDXL.value: "generate",
+    AssetProviderName.GPT_IMAGE.value: "generate",
+    AssetProviderName.GEMINI_IMAGE.value: "generate",
+    AssetProviderName.IDEOGRAM.value: "generate",
+    AssetProviderName.WIKIMEDIA.value: "stock",
+    AssetProviderName.UNSPLASH.value: "stock",
+    AssetProviderName.PIXABAY.value: "stock",
+    AssetProviderName.PEXELS.value: "stock",
+    AssetProviderName.PEXELS_VIDEO.value: "stock",
+    AssetProviderName.PIXABAY_VIDEO.value: "stock",
+    AssetProviderName.MIXKIT.value: "stock",
+    AssetProviderName.LUCIDE.value: "icon",
+    AssetProviderName.HEROICONS.value: "icon",
+    AssetProviderName.MATERIAL_ICONS.value: "icon",
+}
+
+
+def _provider_stats_to_api(m: AssetProviderMetadata) -> dict:
+    return {
+        "providerName": m.provider_name,
+        "providerType": m.provider_type,
+        "isEnabled": m.is_enabled,
+        "totalRequests": m.total_requests,
+        "successfulRequests": m.successful_requests,
+        "failedRequests": m.failed_requests,
+        "avgLatencyMs": m.avg_latency_ms,
+        "avgCostUsd": m.avg_cost_usd,
+        "totalCostUsd": m.total_cost_usd,
+        "cacheHits": m.cache_hits,
+        "supportedKinds": m.supported_kinds or [],
+    }
+
+
+def _default_provider_stats(name: str) -> dict:
+    return {
+        "providerName": name,
+        "providerType": _PROVIDER_TYPES.get(name, "stock"),
+        "isEnabled": True,
+        "totalRequests": 0,
+        "successfulRequests": 0,
+        "failedRequests": 0,
+        "avgLatencyMs": None,
+        "avgCostUsd": None,
+        "totalCostUsd": 0.0,
+        "cacheHits": 0,
+        "supportedKinds": [],
+    }
 
 
 def _to_api(a: AssetResult) -> AssetResultSchema:
@@ -121,6 +173,21 @@ async def get_asset(
     if not asset:
         raise HTTPException(status_code=404, detail=f"Asset {asset_id!r} not found")
     return _to_api(asset)
+
+
+@router.get("/providers", response_model=dict)
+async def list_asset_providers(
+    db: AsyncSession = Depends(get_db),
+) -> dict:
+    """Return runtime statistics for every known asset provider."""
+    repo = AssetProviderMetadataRepository(db)
+    rows, _ = await repo.list(limit=100)
+    by_name = {r.provider_name: r for r in rows}
+    items = [
+        _provider_stats_to_api(by_name[name]) if name in by_name else _default_provider_stats(name)
+        for name in _PROVIDER_TYPES
+    ]
+    return {"items": items}
 
 
 @router.delete("/{asset_id}", status_code=204)

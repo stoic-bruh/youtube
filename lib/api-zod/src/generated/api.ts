@@ -201,6 +201,712 @@ export const DeleteResearchResponse = zod.void()
 
 
 /**
+ * @summary List storyboard results
+ */
+export const ListStoryboardsQueryParams = zod.object({
+  "status": zod.coerce.string().nullish(),
+  "limit": zod.coerce.number().nullish(),
+  "offset": zod.coerce.number().nullish()
+})
+
+export const ListStoryboardsResponse = zod.object({
+  "items": zod.array(zod.object({
+  "id": zod.string(),
+  "scriptId": zod.string().nullish(),
+  "researchId": zod.string().nullish(),
+  "topic": zod.string(),
+  "title": zod.string().nullish(),
+  "status": zod.enum(['pending', 'running', 'completed', 'failed', 'cached']),
+  "scriptStyle": zod.string().optional(),
+  "scriptTone": zod.string().optional(),
+  "targetDurationMinutes": zod.number().optional(),
+  "targetAudience": zod.string().optional(),
+  "language": zod.string().optional(),
+  "version": zod.number().optional(),
+  "scenes": zod.array(zod.object({
+  "scene_number": zod.number(),
+  "scene_title": zod.string(),
+  "start_time_ms": zod.number(),
+  "end_time_ms": zod.number(),
+  "duration_ms": zod.number(),
+  "narration": zod.string(),
+  "visual_description": zod.string(),
+  "visual_type": zod.string().optional(),
+  "prompts": zod.object({
+
+}).passthrough(),
+  "shot_type": zod.string().optional(),
+  "camera_angle": zod.string().optional(),
+  "camera_movement": zod.string().optional(),
+  "zoom_instructions": zod.string().nullish(),
+  "pan_instructions": zod.string().nullish(),
+  "animation_suggestions": zod.array(zod.object({
+
+}).passthrough()).optional(),
+  "transition_type": zod.string().optional(),
+  "transition_duration_ms": zod.number().optional(),
+  "scene_emotion": zod.string().optional(),
+  "color_palette": zod.array(zod.string()).optional(),
+  "lighting_style": zod.string().optional(),
+  "background_description": zod.string().optional(),
+  "foreground_description": zod.string().optional(),
+  "characters": zod.array(zod.string()).optional(),
+  "objects": zod.array(zod.string()).optional(),
+  "text_overlay_suggestions": zod.array(zod.string()).optional(),
+  "subtitle_timing": zod.object({
+
+}).passthrough().nullish(),
+  "sound_effect_suggestions": zod.array(zod.string()).optional(),
+  "background_music_mood": zod.string().optional(),
+  "b_roll_suggestions": zod.array(zod.string()).optional(),
+  "stock_footage_suggestions": zod.array(zod.string()).optional(),
+  "asset_requirements": zod.array(zod.object({
+
+}).passthrough()).optional(),
+  "importance_score": zod.number().optional(),
+  "estimated_image_count": zod.number().optional(),
+  "estimated_video_length_seconds": zod.number().optional()
+})),
+  "sceneTimeline": zod.array(zod.object({
+
+}).passthrough()).optional(),
+  "narrationTiming": zod.array(zod.object({
+
+}).passthrough()).optional(),
+  "visualCues": zod.array(zod.object({
+
+}).passthrough()).optional(),
+  "totalDurationSeconds": zod.number().nullish(),
+  "sceneCount": zod.number().nullish(),
+  "imageCount": zod.number().nullish(),
+  "editingComplexityScore": zod.number().nullish(),
+  "estimatedRenderTimeMinutes": zod.number().nullish(),
+  "estimatedCostUsd": zod.number().nullish(),
+  "visualPacing": zod.string().nullish(),
+  "narrationPacing": zod.string().nullish(),
+  "providers": zod.array(zod.string()),
+  "usedProviders": zod.array(zod.string()),
+  "jobId": zod.string().nullish(),
+  "logs": zod.array(zod.string()),
+  "errorMessage": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string(),
+  "completedAt": zod.string().nullish()
+})),
+  "total": zod.number()
+})
+
+
+/**
+ * @summary Start an async storyboard-generation job
+ */
+export const startStoryboardBodyTopicMin = 3;
+export const startStoryboardBodyTopicMax = 500;
+
+export const startStoryboardBodyTargetDurationMinutesMax = 120;
+
+
+
+export const StartStoryboardBody = zod.object({
+  "scriptId": zod.string().nullish(),
+  "researchId": zod.string().nullish(),
+  "topic": zod.string().min(startStoryboardBodyTopicMin).max(startStoryboardBodyTopicMax),
+  "scriptStyle": zod.enum(['educational', 'documentary', 'storytelling', 'tutorial', 'news', 'long_form', 'shorts']).optional(),
+  "scriptTone": zod.enum(['engaging', 'authoritative', 'casual', 'inspirational', 'conversational']).optional(),
+  "targetDurationMinutes": zod.number().min(1).max(startStoryboardBodyTargetDurationMinutesMax).optional(),
+  "targetAudience": zod.string().optional(),
+  "language": zod.string().optional(),
+  "providers": zod.array(zod.string()).optional()
+})
+
+export const StartStoryboardResponse = zod.object({
+  "id": zod.string(),
+  "scriptId": zod.string().nullish(),
+  "researchId": zod.string().nullish(),
+  "topic": zod.string(),
+  "title": zod.string().nullish(),
+  "status": zod.enum(['pending', 'running', 'completed', 'failed', 'cached']),
+  "scriptStyle": zod.string().optional(),
+  "scriptTone": zod.string().optional(),
+  "targetDurationMinutes": zod.number().optional(),
+  "targetAudience": zod.string().optional(),
+  "language": zod.string().optional(),
+  "version": zod.number().optional(),
+  "scenes": zod.array(zod.object({
+  "scene_number": zod.number(),
+  "scene_title": zod.string(),
+  "start_time_ms": zod.number(),
+  "end_time_ms": zod.number(),
+  "duration_ms": zod.number(),
+  "narration": zod.string(),
+  "visual_description": zod.string(),
+  "visual_type": zod.string().optional(),
+  "prompts": zod.object({
+
+}).passthrough(),
+  "shot_type": zod.string().optional(),
+  "camera_angle": zod.string().optional(),
+  "camera_movement": zod.string().optional(),
+  "zoom_instructions": zod.string().nullish(),
+  "pan_instructions": zod.string().nullish(),
+  "animation_suggestions": zod.array(zod.object({
+
+}).passthrough()).optional(),
+  "transition_type": zod.string().optional(),
+  "transition_duration_ms": zod.number().optional(),
+  "scene_emotion": zod.string().optional(),
+  "color_palette": zod.array(zod.string()).optional(),
+  "lighting_style": zod.string().optional(),
+  "background_description": zod.string().optional(),
+  "foreground_description": zod.string().optional(),
+  "characters": zod.array(zod.string()).optional(),
+  "objects": zod.array(zod.string()).optional(),
+  "text_overlay_suggestions": zod.array(zod.string()).optional(),
+  "subtitle_timing": zod.object({
+
+}).passthrough().nullish(),
+  "sound_effect_suggestions": zod.array(zod.string()).optional(),
+  "background_music_mood": zod.string().optional(),
+  "b_roll_suggestions": zod.array(zod.string()).optional(),
+  "stock_footage_suggestions": zod.array(zod.string()).optional(),
+  "asset_requirements": zod.array(zod.object({
+
+}).passthrough()).optional(),
+  "importance_score": zod.number().optional(),
+  "estimated_image_count": zod.number().optional(),
+  "estimated_video_length_seconds": zod.number().optional()
+})),
+  "sceneTimeline": zod.array(zod.object({
+
+}).passthrough()).optional(),
+  "narrationTiming": zod.array(zod.object({
+
+}).passthrough()).optional(),
+  "visualCues": zod.array(zod.object({
+
+}).passthrough()).optional(),
+  "totalDurationSeconds": zod.number().nullish(),
+  "sceneCount": zod.number().nullish(),
+  "imageCount": zod.number().nullish(),
+  "editingComplexityScore": zod.number().nullish(),
+  "estimatedRenderTimeMinutes": zod.number().nullish(),
+  "estimatedCostUsd": zod.number().nullish(),
+  "visualPacing": zod.string().nullish(),
+  "narrationPacing": zod.string().nullish(),
+  "providers": zod.array(zod.string()),
+  "usedProviders": zod.array(zod.string()),
+  "jobId": zod.string().nullish(),
+  "logs": zod.array(zod.string()),
+  "errorMessage": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string(),
+  "completedAt": zod.string().nullish()
+})
+
+
+/**
+ * @summary Get storyboard result by ID
+ */
+export const GetStoryboardParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const GetStoryboardResponse = zod.object({
+  "id": zod.string(),
+  "scriptId": zod.string().nullish(),
+  "researchId": zod.string().nullish(),
+  "topic": zod.string(),
+  "title": zod.string().nullish(),
+  "status": zod.enum(['pending', 'running', 'completed', 'failed', 'cached']),
+  "scriptStyle": zod.string().optional(),
+  "scriptTone": zod.string().optional(),
+  "targetDurationMinutes": zod.number().optional(),
+  "targetAudience": zod.string().optional(),
+  "language": zod.string().optional(),
+  "version": zod.number().optional(),
+  "scenes": zod.array(zod.object({
+  "scene_number": zod.number(),
+  "scene_title": zod.string(),
+  "start_time_ms": zod.number(),
+  "end_time_ms": zod.number(),
+  "duration_ms": zod.number(),
+  "narration": zod.string(),
+  "visual_description": zod.string(),
+  "visual_type": zod.string().optional(),
+  "prompts": zod.object({
+
+}).passthrough(),
+  "shot_type": zod.string().optional(),
+  "camera_angle": zod.string().optional(),
+  "camera_movement": zod.string().optional(),
+  "zoom_instructions": zod.string().nullish(),
+  "pan_instructions": zod.string().nullish(),
+  "animation_suggestions": zod.array(zod.object({
+
+}).passthrough()).optional(),
+  "transition_type": zod.string().optional(),
+  "transition_duration_ms": zod.number().optional(),
+  "scene_emotion": zod.string().optional(),
+  "color_palette": zod.array(zod.string()).optional(),
+  "lighting_style": zod.string().optional(),
+  "background_description": zod.string().optional(),
+  "foreground_description": zod.string().optional(),
+  "characters": zod.array(zod.string()).optional(),
+  "objects": zod.array(zod.string()).optional(),
+  "text_overlay_suggestions": zod.array(zod.string()).optional(),
+  "subtitle_timing": zod.object({
+
+}).passthrough().nullish(),
+  "sound_effect_suggestions": zod.array(zod.string()).optional(),
+  "background_music_mood": zod.string().optional(),
+  "b_roll_suggestions": zod.array(zod.string()).optional(),
+  "stock_footage_suggestions": zod.array(zod.string()).optional(),
+  "asset_requirements": zod.array(zod.object({
+
+}).passthrough()).optional(),
+  "importance_score": zod.number().optional(),
+  "estimated_image_count": zod.number().optional(),
+  "estimated_video_length_seconds": zod.number().optional()
+})),
+  "sceneTimeline": zod.array(zod.object({
+
+}).passthrough()).optional(),
+  "narrationTiming": zod.array(zod.object({
+
+}).passthrough()).optional(),
+  "visualCues": zod.array(zod.object({
+
+}).passthrough()).optional(),
+  "totalDurationSeconds": zod.number().nullish(),
+  "sceneCount": zod.number().nullish(),
+  "imageCount": zod.number().nullish(),
+  "editingComplexityScore": zod.number().nullish(),
+  "estimatedRenderTimeMinutes": zod.number().nullish(),
+  "estimatedCostUsd": zod.number().nullish(),
+  "visualPacing": zod.string().nullish(),
+  "narrationPacing": zod.string().nullish(),
+  "providers": zod.array(zod.string()),
+  "usedProviders": zod.array(zod.string()),
+  "jobId": zod.string().nullish(),
+  "logs": zod.array(zod.string()),
+  "errorMessage": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string(),
+  "completedAt": zod.string().nullish()
+})
+
+
+/**
+ * @summary Delete a storyboard result
+ */
+export const DeleteStoryboardParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const DeleteStoryboardResponse = zod.void()
+
+
+/**
+ * @summary List asset results
+ */
+export const ListAssetsQueryParams = zod.object({
+  "limit": zod.coerce.number().nullish(),
+  "offset": zod.coerce.number().nullish(),
+  "storyboardId": zod.coerce.string().nullish(),
+  "sceneId": zod.coerce.string().nullish(),
+  "status": zod.coerce.string().nullish(),
+  "assetKind": zod.coerce.string().nullish(),
+  "provider": zod.coerce.string().nullish()
+})
+
+export const ListAssetsResponse = zod.object({
+  "items": zod.array(zod.object({
+  "id": zod.string(),
+  "storyboardId": zod.string(),
+  "sceneId": zod.string(),
+  "assetKind": zod.enum(['image', 'video', 'svg', 'chart', 'map', 'icon']),
+  "provider": zod.string().nullish(),
+  "providerAssetId": zod.string().nullish(),
+  "sourceUrl": zod.string().nullish(),
+  "license": zod.enum(['public_domain', 'cc0', 'cc_by', 'cc_by_sa', 'commercial', 'generated', 'mit', 'unknown']),
+  "prompt": zod.string().nullish(),
+  "negativePrompt": zod.string().nullish(),
+  "generationParameters": zod.record(zod.string(), zod.unknown()).optional(),
+  "width": zod.number().nullish(),
+  "height": zod.number().nullish(),
+  "aspectRatio": zod.string().nullish(),
+  "status": zod.enum(['pending', 'searching', 'downloading', 'generating', 'ready', 'failed', 'cached']),
+  "costEstimateUsd": zod.number().nullish(),
+  "generationTimeMs": zod.number().nullish(),
+  "fileSizeBytes": zod.number().nullish(),
+  "localCachePath": zod.string().nullish(),
+  "thumbnailPath": zod.string().nullish(),
+  "tags": zod.array(zod.string()),
+  "qualityScore": zod.number().nullish(),
+  "relevanceScore": zod.number().nullish(),
+  "logs": zod.array(zod.string()),
+  "errorMessage": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string(),
+  "completedAt": zod.string().nullish()
+})),
+  "total": zod.number()
+})
+
+
+/**
+ * @summary Enqueue asset acquisition for a storyboard
+ */
+export const AcquireAssetsBody = zod.object({
+  "storyboardId": zod.string(),
+  "sceneIds": zod.array(zod.string()).optional().describe('Empty = all scenes in the storyboard'),
+  "assetKinds": zod.array(zod.enum(['image', 'video', 'svg', 'chart', 'map', 'icon'])).optional(),
+  "providers": zod.array(zod.string()).optional().describe('Ordered preference list — stock providers searched first, then generation'),
+  "forceGenerate": zod.boolean().optional()
+})
+
+export const AcquireAssetsResponse = zod.object({
+  "items": zod.array(zod.object({
+  "id": zod.string(),
+  "storyboardId": zod.string(),
+  "sceneId": zod.string(),
+  "assetKind": zod.enum(['image', 'video', 'svg', 'chart', 'map', 'icon']),
+  "provider": zod.string().nullish(),
+  "providerAssetId": zod.string().nullish(),
+  "sourceUrl": zod.string().nullish(),
+  "license": zod.enum(['public_domain', 'cc0', 'cc_by', 'cc_by_sa', 'commercial', 'generated', 'mit', 'unknown']),
+  "prompt": zod.string().nullish(),
+  "negativePrompt": zod.string().nullish(),
+  "generationParameters": zod.record(zod.string(), zod.unknown()).optional(),
+  "width": zod.number().nullish(),
+  "height": zod.number().nullish(),
+  "aspectRatio": zod.string().nullish(),
+  "status": zod.enum(['pending', 'searching', 'downloading', 'generating', 'ready', 'failed', 'cached']),
+  "costEstimateUsd": zod.number().nullish(),
+  "generationTimeMs": zod.number().nullish(),
+  "fileSizeBytes": zod.number().nullish(),
+  "localCachePath": zod.string().nullish(),
+  "thumbnailPath": zod.string().nullish(),
+  "tags": zod.array(zod.string()),
+  "qualityScore": zod.number().nullish(),
+  "relevanceScore": zod.number().nullish(),
+  "logs": zod.array(zod.string()),
+  "errorMessage": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string(),
+  "completedAt": zod.string().nullish()
+})),
+  "total": zod.number(),
+  "message": zod.string()
+})
+
+
+/**
+ * @summary Get asset result by ID
+ */
+export const GetAssetParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const GetAssetResponse = zod.object({
+  "id": zod.string(),
+  "storyboardId": zod.string(),
+  "sceneId": zod.string(),
+  "assetKind": zod.enum(['image', 'video', 'svg', 'chart', 'map', 'icon']),
+  "provider": zod.string().nullish(),
+  "providerAssetId": zod.string().nullish(),
+  "sourceUrl": zod.string().nullish(),
+  "license": zod.enum(['public_domain', 'cc0', 'cc_by', 'cc_by_sa', 'commercial', 'generated', 'mit', 'unknown']),
+  "prompt": zod.string().nullish(),
+  "negativePrompt": zod.string().nullish(),
+  "generationParameters": zod.record(zod.string(), zod.unknown()).optional(),
+  "width": zod.number().nullish(),
+  "height": zod.number().nullish(),
+  "aspectRatio": zod.string().nullish(),
+  "status": zod.enum(['pending', 'searching', 'downloading', 'generating', 'ready', 'failed', 'cached']),
+  "costEstimateUsd": zod.number().nullish(),
+  "generationTimeMs": zod.number().nullish(),
+  "fileSizeBytes": zod.number().nullish(),
+  "localCachePath": zod.string().nullish(),
+  "thumbnailPath": zod.string().nullish(),
+  "tags": zod.array(zod.string()),
+  "qualityScore": zod.number().nullish(),
+  "relevanceScore": zod.number().nullish(),
+  "logs": zod.array(zod.string()),
+  "errorMessage": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string(),
+  "completedAt": zod.string().nullish()
+})
+
+
+/**
+ * @summary Delete an asset result
+ */
+export const DeleteAssetParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const DeleteAssetResponse = zod.void()
+
+
+/**
+ * @summary List asset provider statistics
+ */
+export const ListAssetProvidersResponse = zod.object({
+  "items": zod.array(zod.object({
+  "providerName": zod.string(),
+  "providerType": zod.enum(['stock', 'generate', 'icon']),
+  "isEnabled": zod.boolean(),
+  "totalRequests": zod.number(),
+  "successfulRequests": zod.number(),
+  "failedRequests": zod.number(),
+  "avgLatencyMs": zod.number().nullish(),
+  "avgCostUsd": zod.number().nullish(),
+  "totalCostUsd": zod.number(),
+  "cacheHits": zod.number(),
+  "supportedKinds": zod.array(zod.string()).optional()
+}))
+})
+
+
+/**
+ * @summary List script results
+ */
+export const ListScriptsQueryParams = zod.object({
+  "status": zod.coerce.string().nullish(),
+  "limit": zod.coerce.number().nullish(),
+  "offset": zod.coerce.number().nullish()
+})
+
+export const ListScriptsResponse = zod.object({
+  "items": zod.array(zod.object({
+  "id": zod.string(),
+  "researchId": zod.string().nullish(),
+  "topic": zod.string(),
+  "title": zod.string().nullish(),
+  "status": zod.enum(['pending', 'running', 'completed', 'failed', 'cached']),
+  "style": zod.string().optional(),
+  "tone": zod.string().optional(),
+  "language": zod.string().optional(),
+  "targetAudience": zod.string().optional(),
+  "targetDurationMinutes": zod.number().optional(),
+  "version": zod.number().optional(),
+  "hook": zod.string().nullish(),
+  "introduction": zod.string().nullish(),
+  "outro": zod.string().nullish(),
+  "callToAction": zod.string().nullish(),
+  "sections": zod.array(zod.object({
+  "sectionType": zod.string(),
+  "title": zod.string(),
+  "content": zod.string(),
+  "wordCount": zod.number().optional(),
+  "durationSeconds": zod.number().optional(),
+  "order": zod.number().optional(),
+  "transitionIn": zod.string().nullish(),
+  "transitionOut": zod.string().nullish(),
+  "storytellingNotes": zod.string().nullish(),
+  "visualSuggestion": zod.string().nullish()
+})),
+  "wordCount": zod.number().nullish(),
+  "estimatedDurationSeconds": zod.number().nullish(),
+  "readingTimeSeconds": zod.number().nullish(),
+  "sceneCount": zod.number().nullish(),
+  "pacingWpm": zod.number().nullish(),
+  "narrationTiming": zod.array(zod.object({
+
+}).passthrough()).optional(),
+  "emphasisMarkers": zod.array(zod.object({
+
+}).passthrough()).optional(),
+  "pauses": zod.array(zod.object({
+
+}).passthrough()).optional(),
+  "pronunciationHints": zod.array(zod.object({
+
+}).passthrough()).optional(),
+  "visualCues": zod.array(zod.object({
+
+}).passthrough()).optional(),
+  "versions": zod.array(zod.object({
+
+}).passthrough()).optional(),
+  "providers": zod.array(zod.string()),
+  "usedProviders": zod.array(zod.string()),
+  "jobId": zod.string().nullish(),
+  "logs": zod.array(zod.string()),
+  "errorMessage": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string(),
+  "completedAt": zod.string().nullish()
+})),
+  "total": zod.number()
+})
+
+
+/**
+ * @summary Start an async script-generation job
+ */
+export const startScriptBodyTopicMin = 3;
+export const startScriptBodyTopicMax = 500;
+
+export const startScriptBodyTargetDurationMinutesMax = 120;
+
+
+
+export const StartScriptBody = zod.object({
+  "researchId": zod.string().nullish(),
+  "topic": zod.string().min(startScriptBodyTopicMin).max(startScriptBodyTopicMax),
+  "style": zod.enum(['educational', 'documentary', 'storytelling', 'tutorial', 'news', 'long_form', 'shorts']).optional(),
+  "tone": zod.enum(['engaging', 'authoritative', 'casual', 'inspirational', 'conversational']).optional(),
+  "language": zod.string().optional(),
+  "targetAudience": zod.string().optional(),
+  "targetDurationMinutes": zod.number().min(1).max(startScriptBodyTargetDurationMinutesMax).optional(),
+  "providers": zod.array(zod.string()).optional()
+})
+
+export const StartScriptResponse = zod.object({
+  "id": zod.string(),
+  "researchId": zod.string().nullish(),
+  "topic": zod.string(),
+  "title": zod.string().nullish(),
+  "status": zod.enum(['pending', 'running', 'completed', 'failed', 'cached']),
+  "style": zod.string().optional(),
+  "tone": zod.string().optional(),
+  "language": zod.string().optional(),
+  "targetAudience": zod.string().optional(),
+  "targetDurationMinutes": zod.number().optional(),
+  "version": zod.number().optional(),
+  "hook": zod.string().nullish(),
+  "introduction": zod.string().nullish(),
+  "outro": zod.string().nullish(),
+  "callToAction": zod.string().nullish(),
+  "sections": zod.array(zod.object({
+  "sectionType": zod.string(),
+  "title": zod.string(),
+  "content": zod.string(),
+  "wordCount": zod.number().optional(),
+  "durationSeconds": zod.number().optional(),
+  "order": zod.number().optional(),
+  "transitionIn": zod.string().nullish(),
+  "transitionOut": zod.string().nullish(),
+  "storytellingNotes": zod.string().nullish(),
+  "visualSuggestion": zod.string().nullish()
+})),
+  "wordCount": zod.number().nullish(),
+  "estimatedDurationSeconds": zod.number().nullish(),
+  "readingTimeSeconds": zod.number().nullish(),
+  "sceneCount": zod.number().nullish(),
+  "pacingWpm": zod.number().nullish(),
+  "narrationTiming": zod.array(zod.object({
+
+}).passthrough()).optional(),
+  "emphasisMarkers": zod.array(zod.object({
+
+}).passthrough()).optional(),
+  "pauses": zod.array(zod.object({
+
+}).passthrough()).optional(),
+  "pronunciationHints": zod.array(zod.object({
+
+}).passthrough()).optional(),
+  "visualCues": zod.array(zod.object({
+
+}).passthrough()).optional(),
+  "versions": zod.array(zod.object({
+
+}).passthrough()).optional(),
+  "providers": zod.array(zod.string()),
+  "usedProviders": zod.array(zod.string()),
+  "jobId": zod.string().nullish(),
+  "logs": zod.array(zod.string()),
+  "errorMessage": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string(),
+  "completedAt": zod.string().nullish()
+})
+
+
+/**
+ * @summary Get script result by ID
+ */
+export const GetScriptParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const GetScriptResponse = zod.object({
+  "id": zod.string(),
+  "researchId": zod.string().nullish(),
+  "topic": zod.string(),
+  "title": zod.string().nullish(),
+  "status": zod.enum(['pending', 'running', 'completed', 'failed', 'cached']),
+  "style": zod.string().optional(),
+  "tone": zod.string().optional(),
+  "language": zod.string().optional(),
+  "targetAudience": zod.string().optional(),
+  "targetDurationMinutes": zod.number().optional(),
+  "version": zod.number().optional(),
+  "hook": zod.string().nullish(),
+  "introduction": zod.string().nullish(),
+  "outro": zod.string().nullish(),
+  "callToAction": zod.string().nullish(),
+  "sections": zod.array(zod.object({
+  "sectionType": zod.string(),
+  "title": zod.string(),
+  "content": zod.string(),
+  "wordCount": zod.number().optional(),
+  "durationSeconds": zod.number().optional(),
+  "order": zod.number().optional(),
+  "transitionIn": zod.string().nullish(),
+  "transitionOut": zod.string().nullish(),
+  "storytellingNotes": zod.string().nullish(),
+  "visualSuggestion": zod.string().nullish()
+})),
+  "wordCount": zod.number().nullish(),
+  "estimatedDurationSeconds": zod.number().nullish(),
+  "readingTimeSeconds": zod.number().nullish(),
+  "sceneCount": zod.number().nullish(),
+  "pacingWpm": zod.number().nullish(),
+  "narrationTiming": zod.array(zod.object({
+
+}).passthrough()).optional(),
+  "emphasisMarkers": zod.array(zod.object({
+
+}).passthrough()).optional(),
+  "pauses": zod.array(zod.object({
+
+}).passthrough()).optional(),
+  "pronunciationHints": zod.array(zod.object({
+
+}).passthrough()).optional(),
+  "visualCues": zod.array(zod.object({
+
+}).passthrough()).optional(),
+  "versions": zod.array(zod.object({
+
+}).passthrough()).optional(),
+  "providers": zod.array(zod.string()),
+  "usedProviders": zod.array(zod.string()),
+  "jobId": zod.string().nullish(),
+  "logs": zod.array(zod.string()),
+  "errorMessage": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string(),
+  "completedAt": zod.string().nullish()
+})
+
+
+/**
+ * @summary Delete a script result
+ */
+export const DeleteScriptParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const DeleteScriptResponse = zod.void()
+
+
+/**
  * @summary Health check
  */
 export const HealthCheckResponse = zod.object({
