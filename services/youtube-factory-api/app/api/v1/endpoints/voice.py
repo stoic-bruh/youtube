@@ -82,7 +82,7 @@ async def get_voice(
     return _to_api(voice)
 
 
-@router.delete("/{voice_id}", status_code=204)
+@router.delete("/{voice_id}", status_code=204, response_model=None)
 async def delete_voice(
     voice_id: str,
     db: AsyncSession = Depends(get_db),

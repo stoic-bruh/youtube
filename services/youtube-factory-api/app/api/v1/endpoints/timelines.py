@@ -161,7 +161,7 @@ async def get_timeline(
     return _to_api(timeline)
 
 
-@router.delete("/{timeline_id}", status_code=204)
+@router.delete("/{timeline_id}", status_code=204, response_model=None)
 async def delete_timeline(
     timeline_id: str,
     db: AsyncSession = Depends(get_db),

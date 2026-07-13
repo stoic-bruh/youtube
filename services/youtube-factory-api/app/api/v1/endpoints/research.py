@@ -136,7 +136,7 @@ async def get_research(
     return _to_api(result)
 
 
-@router.delete("/{id}", status_code=204)
+@router.delete("/{id}", status_code=204, response_model=None)
 async def delete_research(
     id: str,
     db: Annotated[AsyncSession, Depends(get_db)],

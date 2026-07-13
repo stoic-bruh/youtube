@@ -99,7 +99,7 @@ async def update_project(
     return project_to_dict(project)
 
 
-@router.delete("/{id}", status_code=204)
+@router.delete("/{id}", status_code=204, response_model=None)
 async def delete_project(
     id: str,
     db: Annotated[AsyncSession, Depends(get_db)],

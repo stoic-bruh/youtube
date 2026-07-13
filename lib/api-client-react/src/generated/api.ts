@@ -36,6 +36,7 @@ import type {
   ListLogsParams,
   ListPipelinesParams,
   ListProjectsParams,
+  ListRendersParams,
   ListResearchParams,
   ListScriptsParams,
   ListStoryboardsParams,
@@ -48,6 +49,10 @@ import type {
   ProjectInput,
   ProjectList,
   ProjectUpdate,
+  RenderInput,
+  RenderList,
+  RenderProviderStats,
+  RenderResult,
   ResearchInput,
   ResearchList,
   ResearchResult,
@@ -2056,6 +2061,386 @@ export function useGetVoiceProviderStats<TData = Awaited<ReturnType<typeof getVo
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
   const queryOptions = getGetVoiceProviderStatsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getListRendersUrl = (params?: ListRendersParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/renders?${stringifiedParams}` : `/api/renders`
+}
+
+/**
+ * @summary List render jobs (the Render Queue)
+ */
+export const listRenders = async (params?: ListRendersParams, options?: RequestInit): Promise<RenderList> => {
+
+  return customFetch<RenderList>(getListRendersUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListRendersQueryKey = (params?: ListRendersParams,) => {
+    return [
+    `/api/renders`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getListRendersQueryOptions = <TData = Awaited<ReturnType<typeof listRenders>>, TError = ErrorType<unknown>>(params?: ListRendersParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listRenders>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListRendersQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listRenders>>> = ({ signal }) => listRenders(params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listRenders>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListRendersQueryResult = NonNullable<Awaited<ReturnType<typeof listRenders>>>
+export type ListRendersQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List render jobs (the Render Queue)
+ */
+
+export function useListRenders<TData = Awaited<ReturnType<typeof listRenders>>, TError = ErrorType<unknown>>(
+ params?: ListRendersParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listRenders>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListRendersQueryOptions(params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getStartRenderUrl = () => {
+
+
+
+
+  return `/api/renders`
+}
+
+/**
+ * @summary Enqueue a render job for a completed timeline
+ */
+export const startRender = async (renderInput: RenderInput, options?: RequestInit): Promise<RenderResult> => {
+
+  return customFetch<RenderResult>(getStartRenderUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(renderInput)
+  }
+);}
+
+
+
+
+
+export const getStartRenderMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof startRender>>, TError,{data: BodyType<RenderInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof startRender>>, TError,{data: BodyType<RenderInput>}, TContext> => {
+
+const mutationKey = ['startRender'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof startRender>>, {data: BodyType<RenderInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  startRender(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type StartRenderMutationResult = NonNullable<Awaited<ReturnType<typeof startRender>>>
+    export type StartRenderMutationBody = BodyType<RenderInput>
+    export type StartRenderMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Enqueue a render job for a completed timeline
+ */
+export const useStartRender = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof startRender>>, TError,{data: BodyType<RenderInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof startRender>>,
+        TError,
+        {data: BodyType<RenderInput>},
+        TContext
+      > => {
+      return useMutation(getStartRenderMutationOptions(options));
+    }
+
+export const getGetRenderUrl = (id: string,) => {
+
+
+
+
+  return `/api/renders/${id}`
+}
+
+/**
+ * @summary Get a render result by ID
+ */
+export const getRender = async (id: string, options?: RequestInit): Promise<RenderResult> => {
+
+  return customFetch<RenderResult>(getGetRenderUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetRenderQueryKey = (id: string,) => {
+    return [
+    `/api/renders/${id}`
+    ] as const;
+    }
+
+
+export const getGetRenderQueryOptions = <TData = Awaited<ReturnType<typeof getRender>>, TError = ErrorType<void>>(id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getRender>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetRenderQueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getRender>>> = ({ signal }) => getRender(id, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getRender>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetRenderQueryResult = NonNullable<Awaited<ReturnType<typeof getRender>>>
+export type GetRenderQueryError = ErrorType<void>
+
+
+/**
+ * @summary Get a render result by ID
+ */
+
+export function useGetRender<TData = Awaited<ReturnType<typeof getRender>>, TError = ErrorType<void>>(
+ id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getRender>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetRenderQueryOptions(id,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getDeleteRenderUrl = (id: string,) => {
+
+
+
+
+  return `/api/renders/${id}`
+}
+
+/**
+ * @summary Delete a render record (and its output file, if present)
+ */
+export const deleteRender = async (id: string, options?: RequestInit): Promise<void> => {
+
+  return customFetch<void>(getDeleteRenderUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+
+export const getDeleteRenderMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteRender>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteRender>>, TError,{id: string}, TContext> => {
+
+const mutationKey = ['deleteRender'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteRender>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  deleteRender(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteRenderMutationResult = NonNullable<Awaited<ReturnType<typeof deleteRender>>>
+
+    export type DeleteRenderMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Delete a render record (and its output file, if present)
+ */
+export const useDeleteRender = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteRender>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof deleteRender>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
+      return useMutation(getDeleteRenderMutationOptions(options));
+    }
+
+export const getGetRenderProviderStatsUrl = () => {
+
+
+
+
+  return `/api/renders/providers/stats`
+}
+
+/**
+ * @summary Aggregate render-engine statistics (single backend — MoviePy)
+ */
+export const getRenderProviderStats = async ( options?: RequestInit): Promise<RenderProviderStats> => {
+
+  return customFetch<RenderProviderStats>(getGetRenderProviderStatsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetRenderProviderStatsQueryKey = () => {
+    return [
+    `/api/renders/providers/stats`
+    ] as const;
+    }
+
+
+export const getGetRenderProviderStatsQueryOptions = <TData = Awaited<ReturnType<typeof getRenderProviderStats>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getRenderProviderStats>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetRenderProviderStatsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getRenderProviderStats>>> = ({ signal }) => getRenderProviderStats({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getRenderProviderStats>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetRenderProviderStatsQueryResult = NonNullable<Awaited<ReturnType<typeof getRenderProviderStats>>>
+export type GetRenderProviderStatsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Aggregate render-engine statistics (single backend — MoviePy)
+ */
+
+export function useGetRenderProviderStats<TData = Awaited<ReturnType<typeof getRenderProviderStats>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getRenderProviderStats>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetRenderProviderStatsQueryOptions(options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 

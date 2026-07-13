@@ -1087,6 +1087,142 @@ export interface TimelineList {
   total: number;
 }
 
+export type RenderInputResolution = typeof RenderInputResolution[keyof typeof RenderInputResolution];
+
+
+export const RenderInputResolution = {
+  '720p': '720p',
+  '1080p': '1080p',
+  '4k': '4k',
+} as const;
+
+export type RenderInputAspectRatio = typeof RenderInputAspectRatio[keyof typeof RenderInputAspectRatio];
+
+
+export const RenderInputAspectRatio = {
+  '16:9': '16:9',
+  '9:16': '9:16',
+  '1:1': '1:1',
+} as const;
+
+export type RenderInputCropMode = typeof RenderInputCropMode[keyof typeof RenderInputCropMode];
+
+
+export const RenderInputCropMode = {
+  safe_crop: 'safe_crop',
+  letterbox: 'letterbox',
+  blur_pad: 'blur_pad',
+} as const;
+
+export interface RenderInput {
+  timelineId: string;
+  /** @nullable */
+  voiceId?: string | null;
+  resolution?: RenderInputResolution;
+  /**
+     * @minimum 24
+     * @maximum 60
+     */
+  fps?: number;
+  aspectRatio?: RenderInputAspectRatio;
+  cropMode?: RenderInputCropMode;
+  hardwareAcceleration?: boolean;
+  addBackgroundMusic?: boolean;
+  /**
+     * @minimum 0
+     * @maximum 1
+     */
+  musicVolume?: number;
+  generatePreview?: boolean;
+}
+
+export interface RenderOutput {
+  /** @nullable */
+  localPath?: string | null;
+  fileSizeBytes?: number;
+  durationSeconds?: number;
+  width?: number;
+  height?: number;
+  fps?: number;
+  codec?: string;
+  audioCodec?: string;
+  format?: string;
+}
+
+export interface RenderStats {
+  renderTimeSeconds?: number;
+  framesEncoded?: number;
+  encodeFps?: number;
+  realtimeFactor?: number;
+  retries?: number;
+}
+
+export interface RenderMetadata {
+  sceneCount?: number;
+  clipCount?: number;
+  placeholderClipCount?: number;
+  hasNarration?: boolean;
+  hasBackgroundMusic?: boolean;
+  sourceTimelineId?: string;
+  /** @nullable */
+  sourceVoiceId?: string | null;
+}
+
+export type RenderResultStatus = typeof RenderResultStatus[keyof typeof RenderResultStatus];
+
+
+export const RenderResultStatus = {
+  pending: 'pending',
+  running: 'running',
+  completed: 'completed',
+  failed: 'failed',
+} as const;
+
+export type RenderResultRenderPlan = {[key: string]: unknown};
+
+export interface RenderResult {
+  id: string;
+  timelineId: string;
+  /** @nullable */
+  voiceId?: string | null;
+  status: RenderResultStatus;
+  progress?: number;
+  resolution?: string;
+  width?: number;
+  height?: number;
+  fps?: number;
+  aspectRatio?: string;
+  cropMode?: string;
+  hardwareAcceleration?: boolean;
+  renderPlan?: RenderResultRenderPlan;
+  renderOutput?: RenderOutput;
+  renderStats?: RenderStats;
+  renderMetadata?: RenderMetadata;
+  previewOutput?: RenderOutput;
+  logs: string[];
+  /** @nullable */
+  errorMessage?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  /** @nullable */
+  completedAt?: string | null;
+}
+
+export interface RenderList {
+  items: RenderResult[];
+  total: number;
+}
+
+export interface RenderProviderStats {
+  backend: string;
+  totalRenders: number;
+  completed: number;
+  failed: number;
+  avgRenderTimeSeconds?: number;
+  avgRealtimeFactor?: number;
+  totalOutputSeconds?: number;
+}
+
 export type ListResearchParams = {
 /**
  * @nullable
@@ -1187,6 +1323,25 @@ export type ListVoicesParams = {
  * @nullable
  */
 scriptId?: string | null;
+/**
+ * @nullable
+ */
+status?: string | null;
+/**
+ * @nullable
+ */
+limit?: number | null;
+/**
+ * @nullable
+ */
+offset?: number | null;
+};
+
+export type ListRendersParams = {
+/**
+ * @nullable
+ */
+timelineId?: string | null;
 /**
  * @nullable
  */

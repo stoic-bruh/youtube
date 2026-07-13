@@ -1391,6 +1391,254 @@ export const GetVoiceProviderStatsResponse = zod.object({
 
 
 /**
+ * @summary List render jobs (the Render Queue)
+ */
+export const ListRendersQueryParams = zod.object({
+  "timelineId": zod.coerce.string().nullish(),
+  "status": zod.coerce.string().nullish(),
+  "limit": zod.coerce.number().nullish(),
+  "offset": zod.coerce.number().nullish()
+})
+
+export const ListRendersResponse = zod.object({
+  "items": zod.array(zod.object({
+  "id": zod.string(),
+  "timelineId": zod.string(),
+  "voiceId": zod.string().nullish(),
+  "status": zod.enum(['pending', 'running', 'completed', 'failed']),
+  "progress": zod.number().optional(),
+  "resolution": zod.string().optional(),
+  "width": zod.number().optional(),
+  "height": zod.number().optional(),
+  "fps": zod.number().optional(),
+  "aspectRatio": zod.string().optional(),
+  "cropMode": zod.string().optional(),
+  "hardwareAcceleration": zod.boolean().optional(),
+  "renderPlan": zod.record(zod.string(), zod.unknown()).optional(),
+  "renderOutput": zod.object({
+  "localPath": zod.string().nullish(),
+  "fileSizeBytes": zod.number().optional(),
+  "durationSeconds": zod.number().optional(),
+  "width": zod.number().optional(),
+  "height": zod.number().optional(),
+  "fps": zod.number().optional(),
+  "codec": zod.string().optional(),
+  "audioCodec": zod.string().optional(),
+  "format": zod.string().optional()
+}).optional(),
+  "renderStats": zod.object({
+  "renderTimeSeconds": zod.number().optional(),
+  "framesEncoded": zod.number().optional(),
+  "encodeFps": zod.number().optional(),
+  "realtimeFactor": zod.number().optional(),
+  "retries": zod.number().optional()
+}).optional(),
+  "renderMetadata": zod.object({
+  "sceneCount": zod.number().optional(),
+  "clipCount": zod.number().optional(),
+  "placeholderClipCount": zod.number().optional(),
+  "hasNarration": zod.boolean().optional(),
+  "hasBackgroundMusic": zod.boolean().optional(),
+  "sourceTimelineId": zod.string().optional(),
+  "sourceVoiceId": zod.string().nullish()
+}).optional(),
+  "previewOutput": zod.object({
+  "localPath": zod.string().nullish(),
+  "fileSizeBytes": zod.number().optional(),
+  "durationSeconds": zod.number().optional(),
+  "width": zod.number().optional(),
+  "height": zod.number().optional(),
+  "fps": zod.number().optional(),
+  "codec": zod.string().optional(),
+  "audioCodec": zod.string().optional(),
+  "format": zod.string().optional()
+}).optional(),
+  "logs": zod.array(zod.string()),
+  "errorMessage": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string(),
+  "completedAt": zod.string().nullish()
+})),
+  "total": zod.number()
+})
+
+
+/**
+ * @summary Enqueue a render job for a completed timeline
+ */
+export const startRenderBodyFpsMin = 24;
+export const startRenderBodyFpsMax = 60;
+
+export const startRenderBodyMusicVolumeMin = 0;
+export const startRenderBodyMusicVolumeMax = 1;
+
+
+
+export const StartRenderBody = zod.object({
+  "timelineId": zod.string(),
+  "voiceId": zod.string().nullish(),
+  "resolution": zod.enum(['720p', '1080p', '4k']).optional(),
+  "fps": zod.number().min(startRenderBodyFpsMin).max(startRenderBodyFpsMax).optional(),
+  "aspectRatio": zod.enum(['16:9', '9:16', '1:1']).optional(),
+  "cropMode": zod.enum(['safe_crop', 'letterbox', 'blur_pad']).optional(),
+  "hardwareAcceleration": zod.boolean().optional(),
+  "addBackgroundMusic": zod.boolean().optional(),
+  "musicVolume": zod.number().min(startRenderBodyMusicVolumeMin).max(startRenderBodyMusicVolumeMax).optional(),
+  "generatePreview": zod.boolean().optional()
+})
+
+export const StartRenderResponse = zod.object({
+  "id": zod.string(),
+  "timelineId": zod.string(),
+  "voiceId": zod.string().nullish(),
+  "status": zod.enum(['pending', 'running', 'completed', 'failed']),
+  "progress": zod.number().optional(),
+  "resolution": zod.string().optional(),
+  "width": zod.number().optional(),
+  "height": zod.number().optional(),
+  "fps": zod.number().optional(),
+  "aspectRatio": zod.string().optional(),
+  "cropMode": zod.string().optional(),
+  "hardwareAcceleration": zod.boolean().optional(),
+  "renderPlan": zod.record(zod.string(), zod.unknown()).optional(),
+  "renderOutput": zod.object({
+  "localPath": zod.string().nullish(),
+  "fileSizeBytes": zod.number().optional(),
+  "durationSeconds": zod.number().optional(),
+  "width": zod.number().optional(),
+  "height": zod.number().optional(),
+  "fps": zod.number().optional(),
+  "codec": zod.string().optional(),
+  "audioCodec": zod.string().optional(),
+  "format": zod.string().optional()
+}).optional(),
+  "renderStats": zod.object({
+  "renderTimeSeconds": zod.number().optional(),
+  "framesEncoded": zod.number().optional(),
+  "encodeFps": zod.number().optional(),
+  "realtimeFactor": zod.number().optional(),
+  "retries": zod.number().optional()
+}).optional(),
+  "renderMetadata": zod.object({
+  "sceneCount": zod.number().optional(),
+  "clipCount": zod.number().optional(),
+  "placeholderClipCount": zod.number().optional(),
+  "hasNarration": zod.boolean().optional(),
+  "hasBackgroundMusic": zod.boolean().optional(),
+  "sourceTimelineId": zod.string().optional(),
+  "sourceVoiceId": zod.string().nullish()
+}).optional(),
+  "previewOutput": zod.object({
+  "localPath": zod.string().nullish(),
+  "fileSizeBytes": zod.number().optional(),
+  "durationSeconds": zod.number().optional(),
+  "width": zod.number().optional(),
+  "height": zod.number().optional(),
+  "fps": zod.number().optional(),
+  "codec": zod.string().optional(),
+  "audioCodec": zod.string().optional(),
+  "format": zod.string().optional()
+}).optional(),
+  "logs": zod.array(zod.string()),
+  "errorMessage": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string(),
+  "completedAt": zod.string().nullish()
+})
+
+
+/**
+ * @summary Get a render result by ID
+ */
+export const GetRenderParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const GetRenderResponse = zod.object({
+  "id": zod.string(),
+  "timelineId": zod.string(),
+  "voiceId": zod.string().nullish(),
+  "status": zod.enum(['pending', 'running', 'completed', 'failed']),
+  "progress": zod.number().optional(),
+  "resolution": zod.string().optional(),
+  "width": zod.number().optional(),
+  "height": zod.number().optional(),
+  "fps": zod.number().optional(),
+  "aspectRatio": zod.string().optional(),
+  "cropMode": zod.string().optional(),
+  "hardwareAcceleration": zod.boolean().optional(),
+  "renderPlan": zod.record(zod.string(), zod.unknown()).optional(),
+  "renderOutput": zod.object({
+  "localPath": zod.string().nullish(),
+  "fileSizeBytes": zod.number().optional(),
+  "durationSeconds": zod.number().optional(),
+  "width": zod.number().optional(),
+  "height": zod.number().optional(),
+  "fps": zod.number().optional(),
+  "codec": zod.string().optional(),
+  "audioCodec": zod.string().optional(),
+  "format": zod.string().optional()
+}).optional(),
+  "renderStats": zod.object({
+  "renderTimeSeconds": zod.number().optional(),
+  "framesEncoded": zod.number().optional(),
+  "encodeFps": zod.number().optional(),
+  "realtimeFactor": zod.number().optional(),
+  "retries": zod.number().optional()
+}).optional(),
+  "renderMetadata": zod.object({
+  "sceneCount": zod.number().optional(),
+  "clipCount": zod.number().optional(),
+  "placeholderClipCount": zod.number().optional(),
+  "hasNarration": zod.boolean().optional(),
+  "hasBackgroundMusic": zod.boolean().optional(),
+  "sourceTimelineId": zod.string().optional(),
+  "sourceVoiceId": zod.string().nullish()
+}).optional(),
+  "previewOutput": zod.object({
+  "localPath": zod.string().nullish(),
+  "fileSizeBytes": zod.number().optional(),
+  "durationSeconds": zod.number().optional(),
+  "width": zod.number().optional(),
+  "height": zod.number().optional(),
+  "fps": zod.number().optional(),
+  "codec": zod.string().optional(),
+  "audioCodec": zod.string().optional(),
+  "format": zod.string().optional()
+}).optional(),
+  "logs": zod.array(zod.string()),
+  "errorMessage": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string(),
+  "completedAt": zod.string().nullish()
+})
+
+
+/**
+ * @summary Delete a render record (and its output file, if present)
+ */
+export const DeleteRenderParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const DeleteRenderResponse = zod.void()
+
+
+/**
+ * @summary Aggregate render-engine statistics (single backend — MoviePy)
+ */
+export const GetRenderProviderStatsResponse = zod.object({
+  "backend": zod.string(),
+  "totalRenders": zod.number(),
+  "completed": zod.number(),
+  "failed": zod.number(),
+  "avgRenderTimeSeconds": zod.number().optional(),
+  "avgRealtimeFactor": zod.number().optional(),
+  "totalOutputSeconds": zod.number().optional()
+})
+
+
+/**
  * @summary Health check
  */
 export const HealthCheckResponse = zod.object({

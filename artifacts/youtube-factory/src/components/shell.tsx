@@ -10,6 +10,7 @@ const navItems = [
   { href: "/assets", label: "Assets", icon: Image },
   { href: "/timelines", label: "Timelines", icon: Clapperboard },
   { href: "/voices", label: "Voice Studio", icon: Mic },
+  { href: "/render", label: "Render Studio", icon: Clapperboard },
   { href: "/projects", label: "Projects", icon: Video },
   { href: "/pipelines", label: "Pipelines", icon: Activity },
   { href: "/jobs", label: "Job Queue", icon: ListTree },

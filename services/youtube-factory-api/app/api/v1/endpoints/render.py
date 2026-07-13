@@ -89,7 +89,7 @@ async def get_render(
     return _to_api(render)
 
 
-@router.delete("/{render_id}", status_code=204)
+@router.delete("/{render_id}", status_code=204, response_model=None)
 async def delete_render(
     render_id: str,
     db: AsyncSession = Depends(get_db),

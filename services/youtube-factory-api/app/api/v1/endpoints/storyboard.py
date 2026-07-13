@@ -88,7 +88,7 @@ async def get_storyboard(
     return _to_api(sb)
 
 
-@router.delete("/{storyboard_id}", status_code=204)
+@router.delete("/{storyboard_id}", status_code=204, response_model=None)
 async def delete_storyboard(
     storyboard_id: str,
     db: AsyncSession = Depends(get_db),

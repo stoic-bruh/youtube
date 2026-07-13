@@ -1,0 +1,118 @@
+Analyze the entire repository before making any changes.
+
+Current Project Status
+
+✅ Production Architecture
+✅ Infrastructure
+✅ Research Service
+✅ Script Service
+✅ Storyboard Service
+✅ Asset Intelligence Engine
+✅ Media Timeline Engine
+✅ Voice Engine
+🟡 MoviePy Render Engine partially implemented
+
+IMPORTANT
+
+Do NOT regenerate existing Render Engine code.
+
+Do NOT rewrite working files.
+
+Preserve the current architecture.
+
+====================================================
+
+PHASE 1 — AUDIT
+
+Audit every render-related file.
+
+List:
+
+- exact file paths
+- complete files
+- partial files
+- missing files
+- compile errors
+- runtime errors
+- missing integrations
+
+Then estimate Render Engine completion as a percentage.
+
+Do NOT start coding until the audit is complete.
+
+====================================================
+
+PHASE 2 — COMPLETE THE RENDER ENGINE
+
+Continue ONLY the existing implementation.
+
+Implement any missing:
+
+- RenderService
+- RenderRepository
+- MoviePy backend
+- FFmpeg integration
+- Celery render workers
+- FastAPI endpoints
+- Express routes
+- OpenAPI paths
+- Generated API clients
+- Database integration
+- Render queue
+- Progress tracking
+- Output metadata
+
+Implement Render Studio frontend if missing.
+
+====================================================
+
+VERIFICATION (REQUIRED)
+
+Generate a real sample video using the existing pipeline:
+
+Research
+→ Script
+→ Storyboard
+→ Assets
+→ Timeline
+→ Voice
+→ MoviePy
+
+Verify and report:
+
+- MP4 file successfully generated
+- Output resolution
+- Duration
+- Scene count
+- Audio synchronized
+- Transitions working
+- Render statistics
+
+Run:
+
+- Python tests
+- TypeScript typecheck
+- Frontend build
+- Backend build
+- API smoke tests
+
+Fix any failures.
+
+====================================================
+
+FINAL REPORT (REQUIRED)
+
+Do NOT simply say "completed."
+
+Instead provide:
+
+1. Files created
+2. Files modified
+3. Tests executed
+4. Build status
+5. Whether a real MP4 was successfully rendered
+6. Remaining work, if any
+
+Only after all verification succeeds should you commit Render-related changes.
+
+Do NOT begin Subtitle Engine, Thumbnail Engine, SEO, Upload, Analytics, or Orchestrator.

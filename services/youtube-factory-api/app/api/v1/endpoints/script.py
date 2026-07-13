@@ -91,7 +91,7 @@ async def get_script(
     return _to_api(script)
 
 
-@router.delete("/{script_id}", status_code=204)
+@router.delete("/{script_id}", status_code=204, response_model=None)
 async def delete_script(
     script_id: str,
     db: AsyncSession = Depends(get_db),

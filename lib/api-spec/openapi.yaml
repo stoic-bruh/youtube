@@ -34,6 +34,8 @@ tags:
     description: Media Timeline Engine — merge Storyboard + Assets into production timeline
   - name: voices
     description: Voice Engine — narration audio generation from scripts
+  - name: renders
+    description: Render Engine — MoviePy/FFmpeg composition of Timeline + Voice + Assets into a final MP4
 
 paths:
   # ── Research ──────────────────────────────────────────────────────────────
@@ -555,6 +557,100 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/VoiceProviderStatsList"
+
+  /renders:
+    get:
+      operationId: listRenders
+      tags: [renders]
+      summary: List render jobs (the Render Queue)
+      parameters:
+        - name: timelineId
+          in: query
+          schema:
+            type: ["string", "null"]
+        - name: status
+          in: query
+          schema:
+            type: ["string", "null"]
+        - name: limit
+          in: query
+          schema:
+            type: ["integer", "null"]
+        - name: offset
+          in: query
+          schema:
+            type: ["integer", "null"]
+      responses:
+        "200":
+          description: Render list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RenderList"
+    post:
+      operationId: startRender
+      tags: [renders]
+      summary: Enqueue a render job for a completed timeline
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RenderInput"
+      responses:
+        "202":
+          description: Render accepted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RenderResult"
+
+  /renders/{id}:
+    get:
+      operationId: getRender
+      tags: [renders]
+      summary: Get a render result by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Render result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RenderResult"
+        "404":
+          description: Not found
+    delete:
+      operationId: deleteRender
+      tags: [renders]
+      summary: Delete a render record (and its output file, if present)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Deleted
+
+  /renders/providers/stats:
+    get:
+      operationId: getRenderProviderStats
+      tags: [renders]
+      summary: Aggregate render-engine statistics (single backend — MoviePy)
+      responses:
+        "200":
+          description: Render engine statistics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RenderProviderStats"
 
   /healthz:
     get:
@@ -1908,3 +2004,110 @@ components:
           type: array
           items: { $ref: "#/components/schemas/TimelineResult" }
         total: { type: integer }
+
+    # ── Renders ──────────────────────────────────────────────────────────────
+    RenderInput:
+      type: object
+      required: [timelineId]
+      properties:
+        timelineId:  { type: string }
+        voiceId:     { type: ["string", "null"] }
+        resolution:
+          type: string
+          enum: ["720p", "1080p", "4k"]
+        fps:         { type: integer, minimum: 24, maximum: 60 }
+        aspectRatio:
+          type: string
+          enum: ["16:9", "9:16", "1:1"]
+        cropMode:
+          type: string
+          enum: [safe_crop, letterbox, blur_pad]
+        hardwareAcceleration: { type: boolean }
+        addBackgroundMusic:   { type: boolean }
+        musicVolume:          { type: number, minimum: 0, maximum: 1 }
+        generatePreview:      { type: boolean }
+
+    RenderOutput:
+      type: object
+      properties:
+        localPath:        { type: ["string", "null"] }
+        fileSizeBytes:    { type: integer }
+        durationSeconds:  { type: number }
+        width:            { type: integer }
+        height:           { type: integer }
+        fps:              { type: integer }
+        codec:            { type: string }
+        audioCodec:       { type: string }
+        format:           { type: string }
+
+    RenderStats:
+      type: object
+      properties:
+        renderTimeSeconds: { type: number }
+        framesEncoded:     { type: integer }
+        encodeFps:         { type: number }
+        realtimeFactor:    { type: number }
+        retries:           { type: integer }
+
+    RenderMetadata:
+      type: object
+      properties:
+        sceneCount:            { type: integer }
+        clipCount:             { type: integer }
+        placeholderClipCount:  { type: integer }
+        hasNarration:          { type: boolean }
+        hasBackgroundMusic:    { type: boolean }
+        sourceTimelineId:      { type: string }
+        sourceVoiceId:         { type: ["string", "null"] }
+
+    RenderResult:
+      type: object
+      required: [id, timelineId, status, logs, createdAt, updatedAt]
+      properties:
+        id:              { type: string }
+        timelineId:      { type: string }
+        voiceId:         { type: ["string", "null"] }
+        status:
+          type: string
+          enum: [pending, running, completed, failed]
+        progress:        { type: integer }
+        resolution:      { type: string }
+        width:           { type: integer }
+        height:          { type: integer }
+        fps:             { type: integer }
+        aspectRatio:     { type: string }
+        cropMode:        { type: string }
+        hardwareAcceleration: { type: boolean }
+        renderPlan:      { type: object, additionalProperties: {} }
+        renderOutput:    { $ref: "#/components/schemas/RenderOutput" }
+        renderStats:     { $ref: "#/components/schemas/RenderStats" }
+        renderMetadata:  { $ref: "#/components/schemas/RenderMetadata" }
+        previewOutput:   { $ref: "#/components/schemas/RenderOutput" }
+        logs:
+          type: array
+          items: { type: string }
+        errorMessage:    { type: ["string", "null"] }
+        createdAt:       { type: string }
+        updatedAt:       { type: string }
+        completedAt:     { type: ["string", "null"] }
+
+    RenderList:
+      type: object
+      required: [items, total]
+      properties:
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/RenderResult" }
+        total: { type: integer }
+
+    RenderProviderStats:
+      type: object
+      required: [backend, totalRenders, completed, failed]
+      properties:
+        backend:               { type: string }
+        totalRenders:          { type: integer }
+        completed:             { type: integer }
+        failed:                { type: integer }
+        avgRenderTimeSeconds:  { type: number }
+        avgRealtimeFactor:     { type: number }
+        totalOutputSeconds:    { type: number }
