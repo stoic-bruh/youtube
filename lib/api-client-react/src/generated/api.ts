@@ -39,6 +39,7 @@ import type {
   ListResearchParams,
   ListScriptsParams,
   ListStoryboardsParams,
+  ListTimelinesParams,
   LogList,
   PipelineList,
   PipelineRun,
@@ -57,7 +58,10 @@ import type {
   StageBreakdown,
   StoryboardInput,
   StoryboardList,
-  StoryboardResult
+  StoryboardResult,
+  TimelineInput,
+  TimelineList,
+  TimelineResult
 } from './api.schemas';
 
 import { customFetch } from '../custom-fetch';
@@ -1072,6 +1076,309 @@ export function useListAssetProviders<TData = Awaited<ReturnType<typeof listAsse
 
 
 
+
+export const getListTimelinesUrl = (params?: ListTimelinesParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/timelines?${stringifiedParams}` : `/api/timelines`
+}
+
+/**
+ * @summary List media timeline results
+ */
+export const listTimelines = async (params?: ListTimelinesParams, options?: RequestInit): Promise<TimelineList> => {
+
+  return customFetch<TimelineList>(getListTimelinesUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListTimelinesQueryKey = (params?: ListTimelinesParams,) => {
+    return [
+    `/api/timelines`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getListTimelinesQueryOptions = <TData = Awaited<ReturnType<typeof listTimelines>>, TError = ErrorType<unknown>>(params?: ListTimelinesParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listTimelines>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListTimelinesQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listTimelines>>> = ({ signal }) => listTimelines(params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listTimelines>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListTimelinesQueryResult = NonNullable<Awaited<ReturnType<typeof listTimelines>>>
+export type ListTimelinesQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List media timeline results
+ */
+
+export function useListTimelines<TData = Awaited<ReturnType<typeof listTimelines>>, TError = ErrorType<unknown>>(
+ params?: ListTimelinesParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listTimelines>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListTimelinesQueryOptions(params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getBuildTimelineUrl = () => {
+
+
+
+
+  return `/api/timelines`
+}
+
+/**
+ * @summary Build a media timeline from a storyboard
+ */
+export const buildTimeline = async (timelineInput: TimelineInput, options?: RequestInit): Promise<TimelineResult> => {
+
+  return customFetch<TimelineResult>(getBuildTimelineUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(timelineInput)
+  }
+);}
+
+
+
+
+
+export const getBuildTimelineMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof buildTimeline>>, TError,{data: BodyType<TimelineInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof buildTimeline>>, TError,{data: BodyType<TimelineInput>}, TContext> => {
+
+const mutationKey = ['buildTimeline'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof buildTimeline>>, {data: BodyType<TimelineInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  buildTimeline(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type BuildTimelineMutationResult = NonNullable<Awaited<ReturnType<typeof buildTimeline>>>
+    export type BuildTimelineMutationBody = BodyType<TimelineInput>
+    export type BuildTimelineMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Build a media timeline from a storyboard
+ */
+export const useBuildTimeline = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof buildTimeline>>, TError,{data: BodyType<TimelineInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof buildTimeline>>,
+        TError,
+        {data: BodyType<TimelineInput>},
+        TContext
+      > => {
+      return useMutation(getBuildTimelineMutationOptions(options));
+    }
+
+export const getGetTimelineUrl = (id: string,) => {
+
+
+
+
+  return `/api/timelines/${id}`
+}
+
+/**
+ * @summary Get a timeline by ID
+ */
+export const getTimeline = async (id: string, options?: RequestInit): Promise<TimelineResult> => {
+
+  return customFetch<TimelineResult>(getGetTimelineUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetTimelineQueryKey = (id: string,) => {
+    return [
+    `/api/timelines/${id}`
+    ] as const;
+    }
+
+
+export const getGetTimelineQueryOptions = <TData = Awaited<ReturnType<typeof getTimeline>>, TError = ErrorType<void>>(id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getTimeline>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetTimelineQueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getTimeline>>> = ({ signal }) => getTimeline(id, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getTimeline>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetTimelineQueryResult = NonNullable<Awaited<ReturnType<typeof getTimeline>>>
+export type GetTimelineQueryError = ErrorType<void>
+
+
+/**
+ * @summary Get a timeline by ID
+ */
+
+export function useGetTimeline<TData = Awaited<ReturnType<typeof getTimeline>>, TError = ErrorType<void>>(
+ id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getTimeline>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetTimelineQueryOptions(id,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getDeleteTimelineUrl = (id: string,) => {
+
+
+
+
+  return `/api/timelines/${id}`
+}
+
+/**
+ * @summary Delete a timeline record
+ */
+export const deleteTimeline = async (id: string, options?: RequestInit): Promise<void> => {
+
+  return customFetch<void>(getDeleteTimelineUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+
+export const getDeleteTimelineMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteTimeline>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteTimeline>>, TError,{id: string}, TContext> => {
+
+const mutationKey = ['deleteTimeline'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteTimeline>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  deleteTimeline(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteTimelineMutationResult = NonNullable<Awaited<ReturnType<typeof deleteTimeline>>>
+
+    export type DeleteTimelineMutationError = ErrorType<void>
+
+    /**
+ * @summary Delete a timeline record
+ */
+export const useDeleteTimeline = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteTimeline>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof deleteTimeline>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
+      return useMutation(getDeleteTimelineMutationOptions(options));
+    }
 
 export const getListScriptsUrl = (params?: ListScriptsParams,) => {
   const normalizedParams = new URLSearchParams();

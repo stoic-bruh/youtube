@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Activity, LayoutDashboard, ListTree, Settings, Terminal, Video, Microscope, ScrollText, Film, Image } from "lucide-react";
+import { Activity, LayoutDashboard, ListTree, Settings, Terminal, Video, Microscope, ScrollText, Film, Image, Clapperboard } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
@@ -8,6 +8,7 @@ const navItems = [
   { href: "/scripts", label: "Scripts", icon: ScrollText },
   { href: "/storyboards", label: "Storyboards", icon: Film },
   { href: "/assets", label: "Assets", icon: Image },
+  { href: "/timelines", label: "Timelines", icon: Clapperboard },
   { href: "/projects", label: "Projects", icon: Video },
   { href: "/pipelines", label: "Pipelines", icon: Activity },
   { href: "/jobs", label: "Job Queue", icon: ListTree },

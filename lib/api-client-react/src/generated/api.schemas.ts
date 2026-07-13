@@ -825,6 +825,167 @@ export interface AssetProviderStatsList {
   items: AssetProviderStats[];
 }
 
+export type TimelineInputRenderFormat = typeof TimelineInputRenderFormat[keyof typeof TimelineInputRenderFormat];
+
+
+export const TimelineInputRenderFormat = {
+  mp4: 'mp4',
+  webm: 'webm',
+} as const;
+
+export interface TimelineInput {
+  storyboardId: string;
+  /** @nullable */
+  scriptId?: string | null;
+  renderFormat?: TimelineInputRenderFormat;
+  /**
+     * @minimum 24
+     * @maximum 60
+     */
+  fps?: number;
+  width?: number;
+  height?: number;
+}
+
+export type TimelineClipEffectsItem = { [key: string]: unknown };
+
+export interface TimelineClip {
+  clipId: string;
+  trackId: string;
+  sceneId: string;
+  /** @nullable */
+  assetId?: string | null;
+  assetKind: string;
+  startMs: number;
+  endMs: number;
+  durationMs: number;
+  /** @nullable */
+  sourceUrl?: string | null;
+  /** @nullable */
+  localPath?: string | null;
+  inPointMs?: number;
+  /** @nullable */
+  outPointMs?: number | null;
+  volume?: number;
+  opacity?: number;
+  effects?: TimelineClipEffectsItem[];
+}
+
+export type TimelineTrackKind = typeof TimelineTrackKind[keyof typeof TimelineTrackKind];
+
+
+export const TimelineTrackKind = {
+  video: 'video',
+  audio: 'audio',
+  subtitle: 'subtitle',
+  overlay: 'overlay',
+} as const;
+
+export interface TimelineTrack {
+  trackId: string;
+  kind: TimelineTrackKind;
+  order: number;
+  label: string;
+  clips: TimelineClip[];
+  isMuted?: boolean;
+  isLocked?: boolean;
+}
+
+export interface TimelineScene {
+  sceneId: string;
+  sceneNumber: number;
+  title: string;
+  startMs: number;
+  endMs: number;
+  durationMs: number;
+  hasVideoAsset?: boolean;
+  hasAudioPlaceholder?: boolean;
+  assetIds?: string[];
+  transitionIn?: string;
+  transitionOut?: string;
+  /** @nullable */
+  narration?: string | null;
+  /** @nullable */
+  visualDescription?: string | null;
+}
+
+export interface TimelineMarker {
+  markerId: string;
+  label: string;
+  timestampMs: number;
+  markerType: string;
+  /** @nullable */
+  color?: string | null;
+}
+
+export interface TimelineRenderPlan {
+  width?: number;
+  height?: number;
+  fps?: number;
+  format?: string;
+  codec?: string;
+  audioCodec?: string;
+  bitrateKbps?: number;
+  /** @nullable */
+  estimatedRenderTimeMs?: number | null;
+}
+
+export interface TimelineMetadata {
+  totalDurationMs?: number;
+  totalScenes?: number;
+  videoClipCount?: number;
+  audioClipCount?: number;
+  hasGaps?: boolean;
+  gapCount?: number;
+  transitionCount?: number;
+  /** @nullable */
+  estimatedFileSizeBytes?: number | null;
+  assetCoveragePct?: number;
+}
+
+export type TimelineResultStatus = typeof TimelineResultStatus[keyof typeof TimelineResultStatus];
+
+
+export const TimelineResultStatus = {
+  pending: 'pending',
+  running: 'running',
+  completed: 'completed',
+  failed: 'failed',
+} as const;
+
+export interface TimelineResult {
+  id: string;
+  storyboardId: string;
+  /** @nullable */
+  scriptId?: string | null;
+  topic: string;
+  /** @nullable */
+  title?: string | null;
+  status: TimelineResultStatus;
+  /** @nullable */
+  totalDurationMs?: number | null;
+  /** @nullable */
+  totalScenes?: number | null;
+  tracks: TimelineTrack[];
+  scenes: TimelineScene[];
+  markers: TimelineMarker[];
+  renderPlan?: TimelineRenderPlan;
+  metadata?: TimelineMetadata;
+  validationErrors: string[];
+  logs: string[];
+  /** @nullable */
+  errorMessage?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  /** @nullable */
+  completedAt?: string | null;
+}
+
+export interface TimelineList {
+  items: TimelineResult[];
+  total: number;
+}
+
 export type ListResearchParams = {
 /**
  * @nullable
@@ -884,6 +1045,25 @@ assetKind?: string | null;
  * @nullable
  */
 provider?: string | null;
+};
+
+export type ListTimelinesParams = {
+/**
+ * @nullable
+ */
+storyboardId?: string | null;
+/**
+ * @nullable
+ */
+status?: string | null;
+/**
+ * @nullable
+ */
+limit?: number | null;
+/**
+ * @nullable
+ */
+offset?: number | null;
 };
 
 export type ListScriptsParams = {

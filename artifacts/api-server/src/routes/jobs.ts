@@ -40,7 +40,7 @@ router.get("/:id", async (req, res) => {
       .select()
       .from(jobsTable)
       .where(eq(jobsTable.id, req.params.id));
-    if (!job) return res.status(404).json({ error: "Not found" });
+    if (!job) { res.status(404).json({ error: "Not found" }); return; }
     res.json(job);
   } catch (err) {
     req.log.error(err);
@@ -56,7 +56,7 @@ router.post("/:id/retry", async (req, res) => {
       .set({ status: "retrying", error: null, startedAt: null, completedAt: null })
       .where(eq(jobsTable.id, req.params.id))
       .returning();
-    if (!job) return res.status(404).json({ error: "Not found" });
+    if (!job) { res.status(404).json({ error: "Not found" }); return; }
     res.status(202).json(job);
   } catch (err) {
     req.log.error(err);
@@ -72,7 +72,7 @@ router.post("/:id/cancel", async (req, res) => {
       .set({ status: "cancelled", completedAt: new Date() })
       .where(eq(jobsTable.id, req.params.id))
       .returning();
-    if (!job) return res.status(404).json({ error: "Not found" });
+    if (!job) { res.status(404).json({ error: "Not found" }); return; }
     res.json(job);
   } catch (err) {
     req.log.error(err);

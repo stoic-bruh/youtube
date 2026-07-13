@@ -33,8 +33,7 @@ export default function SettingsPage() {
       setFormData({
         ...defaultSettings,
         ...settingsData,
-        webhookUrl: settingsData.webhookUrl || "",
-        notificationsEmail: settingsData.notificationsEmail || ""
+        webhookUrl: settingsData.webhookUrl || ""
       });
     }
   }, [settingsData]);

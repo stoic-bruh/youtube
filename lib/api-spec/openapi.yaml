@@ -30,6 +30,8 @@ tags:
     description: AI script generation service
   - name: assets
     description: Asset Intelligence Engine — image/video/icon acquisition
+  - name: timelines
+    description: Media Timeline Engine — merge Storyboard + Assets into production timeline
 
 paths:
   # ── Research ──────────────────────────────────────────────────────────────
@@ -294,6 +296,90 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/AssetProviderStatsList"
+
+  # ── Timelines ─────────────────────────────────────────────────────────────
+  /timelines:
+    get:
+      operationId: listTimelines
+      tags: [timelines]
+      summary: List media timeline results
+      parameters:
+        - name: storyboardId
+          in: query
+          schema:
+            type: ["string", "null"]
+        - name: status
+          in: query
+          schema:
+            type: ["string", "null"]
+        - name: limit
+          in: query
+          schema:
+            type: ["integer", "null"]
+        - name: offset
+          in: query
+          schema:
+            type: ["integer", "null"]
+      responses:
+        "200":
+          description: Timeline list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TimelineList"
+    post:
+      operationId: buildTimeline
+      tags: [timelines]
+      summary: Build a media timeline from a storyboard
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TimelineInput"
+      responses:
+        "202":
+          description: Timeline build accepted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TimelineResult"
+
+  /timelines/{id}:
+    get:
+      operationId: getTimeline
+      tags: [timelines]
+      summary: Get a timeline by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Timeline result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TimelineResult"
+        "404":
+          description: Not found
+    delete:
+      operationId: deleteTimeline
+      tags: [timelines]
+      summary: Delete a timeline record
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          description: Not found
 
   # ── Scripts ───────────────────────────────────────────────────────────────
   /scripts:
@@ -1481,3 +1567,151 @@ components:
         items:
           type: array
           items: { $ref: "#/components/schemas/AssetProviderStats" }
+
+    # ── Timelines ────────────────────────────────────────────────────────────
+    TimelineInput:
+      type: object
+      required: [storyboardId]
+      properties:
+        storyboardId:  { type: string }
+        scriptId:      { type: ["string", "null"] }
+        renderFormat:
+          type: string
+          enum: [mp4, webm]
+        fps:    { type: integer, minimum: 24, maximum: 60 }
+        width:  { type: integer }
+        height: { type: integer }
+
+    TimelineClip:
+      type: object
+      required: [clipId, trackId, sceneId, assetKind, startMs, endMs, durationMs]
+      properties:
+        clipId:      { type: string }
+        trackId:     { type: string }
+        sceneId:     { type: string }
+        assetId:     { type: ["string", "null"] }
+        assetKind:   { type: string }
+        startMs:     { type: integer }
+        endMs:       { type: integer }
+        durationMs:  { type: integer }
+        sourceUrl:   { type: ["string", "null"] }
+        localPath:   { type: ["string", "null"] }
+        inPointMs:   { type: integer }
+        outPointMs:  { type: ["integer", "null"] }
+        volume:      { type: number }
+        opacity:     { type: number }
+        effects:     { type: array, items: { type: object } }
+
+    TimelineTrack:
+      type: object
+      required: [trackId, kind, order, label, clips]
+      properties:
+        trackId:   { type: string }
+        kind:
+          type: string
+          enum: [video, audio, subtitle, overlay]
+        order:     { type: integer }
+        label:     { type: string }
+        clips:
+          type: array
+          items: { $ref: "#/components/schemas/TimelineClip" }
+        isMuted:   { type: boolean }
+        isLocked:  { type: boolean }
+
+    TimelineScene:
+      type: object
+      required: [sceneId, sceneNumber, title, startMs, endMs, durationMs]
+      properties:
+        sceneId:              { type: string }
+        sceneNumber:          { type: integer }
+        title:                { type: string }
+        startMs:              { type: integer }
+        endMs:                { type: integer }
+        durationMs:           { type: integer }
+        hasVideoAsset:        { type: boolean }
+        hasAudioPlaceholder:  { type: boolean }
+        assetIds:             { type: array, items: { type: string } }
+        transitionIn:         { type: string }
+        transitionOut:        { type: string }
+        narration:            { type: ["string", "null"] }
+        visualDescription:    { type: ["string", "null"] }
+
+    TimelineMarker:
+      type: object
+      required: [markerId, label, timestampMs, markerType]
+      properties:
+        markerId:    { type: string }
+        label:       { type: string }
+        timestampMs: { type: integer }
+        markerType:  { type: string }
+        color:       { type: ["string", "null"] }
+
+    TimelineRenderPlan:
+      type: object
+      properties:
+        width:                  { type: integer }
+        height:                 { type: integer }
+        fps:                    { type: integer }
+        format:                 { type: string }
+        codec:                  { type: string }
+        audioCodec:             { type: string }
+        bitrateKbps:            { type: integer }
+        estimatedRenderTimeMs:  { type: ["integer", "null"] }
+
+    TimelineMetadata:
+      type: object
+      properties:
+        totalDurationMs:        { type: integer }
+        totalScenes:            { type: integer }
+        videoClipCount:         { type: integer }
+        audioClipCount:         { type: integer }
+        hasGaps:                { type: boolean }
+        gapCount:               { type: integer }
+        transitionCount:        { type: integer }
+        estimatedFileSizeBytes: { type: ["integer", "null"] }
+        assetCoveragePct:       { type: number }
+
+    TimelineResult:
+      type: object
+      required: [id, storyboardId, topic, status, tracks, scenes, markers, validationErrors, logs, createdAt, updatedAt]
+      properties:
+        id:               { type: string }
+        storyboardId:     { type: string }
+        scriptId:         { type: ["string", "null"] }
+        topic:            { type: string }
+        title:            { type: ["string", "null"] }
+        status:
+          type: string
+          enum: [pending, running, completed, failed]
+        totalDurationMs:  { type: ["integer", "null"] }
+        totalScenes:      { type: ["integer", "null"] }
+        tracks:
+          type: array
+          items: { $ref: "#/components/schemas/TimelineTrack" }
+        scenes:
+          type: array
+          items: { $ref: "#/components/schemas/TimelineScene" }
+        markers:
+          type: array
+          items: { $ref: "#/components/schemas/TimelineMarker" }
+        renderPlan:  { $ref: "#/components/schemas/TimelineRenderPlan" }
+        metadata:    { $ref: "#/components/schemas/TimelineMetadata" }
+        validationErrors:
+          type: array
+          items: { type: string }
+        logs:
+          type: array
+          items: { type: string }
+        errorMessage:   { type: ["string", "null"] }
+        createdAt:      { type: string }
+        updatedAt:      { type: string }
+        completedAt:    { type: ["string", "null"] }
+
+    TimelineList:
+      type: object
+      required: [items, total]
+      properties:
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/TimelineResult" }
+        total: { type: integer }

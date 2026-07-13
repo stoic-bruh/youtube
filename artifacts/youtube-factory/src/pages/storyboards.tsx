@@ -8,7 +8,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import {
   useListStoryboards, getListStoryboardsQueryKey,
   useStartStoryboard, useDeleteStoryboard, useGetStoryboard, getGetStoryboardQueryKey,
-  StoryboardResult, StoryboardScene, StoryboardSceneTimeline,
+  StoryboardResult, StoryboardScene,
 } from '@workspace/api-client-react';
 
 import {
@@ -228,43 +228,38 @@ function SceneCard({ scene, index }: { scene: StoryboardScene; index: number }) 
             transition={{ duration: 0.2 }}
           >
             <div className="border-t border-border bg-card/20 p-4 space-y-4">
-              {/* Narration */}
               <div>
                 <div className="text-[10px] font-mono uppercase text-muted-foreground mb-1.5">Narration</div>
-                <p className="text-sm text-card-foreground leading-relaxed italic">{scene.narration}</p>
+                <p className="text-sm text-card-foreground leading-relaxed italic">{String(scene.narration ?? "")}</p>
               </div>
 
-              {/* Visual description */}
               <div>
                 <div className="text-[10px] font-mono uppercase text-muted-foreground mb-1.5">Visual</div>
-                <p className="text-sm text-muted-foreground leading-relaxed">{scene.visual_description}</p>
+                <p className="text-sm text-muted-foreground leading-relaxed">{String(scene.visual_description ?? "")}</p>
               </div>
 
-              {/* Image prompt */}
-              {scene.prompts?.image_prompt && (
+              {Boolean((scene.prompts as Record<string, unknown>)?.image_prompt) && (
                 <div>
                   <div className="text-[10px] font-mono uppercase text-muted-foreground mb-1.5 flex items-center gap-1.5">
                     <Image className="w-3 h-3" /> Image Prompt
                   </div>
                   <p className="text-xs font-mono text-primary/80 bg-primary/5 border border-primary/20 rounded p-3 leading-relaxed">
-                    {scene.prompts.image_prompt}
+                    {String((scene.prompts as Record<string, unknown>).image_prompt)}
                   </p>
                 </div>
               )}
 
-              {/* Video prompt */}
-              {scene.prompts?.video_prompt && (
+              {Boolean((scene.prompts as Record<string, unknown>)?.video_prompt) && (
                 <div>
                   <div className="text-[10px] font-mono uppercase text-muted-foreground mb-1.5 flex items-center gap-1.5">
                     <Film className="w-3 h-3" /> Video Prompt
                   </div>
                   <p className="text-xs font-mono text-purple-400/80 bg-purple-400/5 border border-purple-400/20 rounded p-3 leading-relaxed">
-                    {scene.prompts.video_prompt}
+                    {String((scene.prompts as Record<string, unknown>).video_prompt)}
                   </p>
                 </div>
               )}
 
-              {/* Camera & Lighting */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <div className="text-[10px] font-mono uppercase text-muted-foreground mb-2 flex items-center gap-1.5">
@@ -363,7 +358,8 @@ function SceneCard({ scene, index }: { scene: StoryboardScene; index: number }) 
 
 // ── Timeline view ─────────────────────────────────────────────────────────────
 
-function TimelineView({ timeline, totalDurationMs }: { timeline: StoryboardSceneTimeline[]; totalDurationMs: number }) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function TimelineView({ timeline, totalDurationMs }: { timeline: any[]; totalDurationMs: number }) {
   if (!timeline?.length) return (
     <div className="text-xs text-muted-foreground text-center py-12">No timeline data yet</div>
   );
@@ -564,7 +560,8 @@ function StoryboardDetailPanel({ selectedId, onClose }: { selectedId: string; on
   });
 
   const scenes = (sb?.scenes ?? []) as StoryboardScene[];
-  const timeline = (sb?.sceneTimeline ?? []) as StoryboardSceneTimeline[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const timeline = (sb?.sceneTimeline ?? []) as any[];
   const isActive = sb?.status === 'pending' || sb?.status === 'running';
   const totalDurationMs = (sb?.totalDurationSeconds ?? 0) * 1000;
 
@@ -741,8 +738,8 @@ export default function StoryboardsPage() {
     startMutation.mutate({
       data: {
         topic: values.topic,
-        scriptStyle: values.scriptStyle,
-        scriptTone: values.scriptTone,
+        scriptStyle: values.scriptStyle as never,
+        scriptTone: values.scriptTone as never,
         targetDurationMinutes: values.targetDurationMinutes,
         providers: values.providers,
       },

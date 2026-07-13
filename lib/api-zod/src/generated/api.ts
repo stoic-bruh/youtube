@@ -671,6 +671,317 @@ export const ListAssetProvidersResponse = zod.object({
 
 
 /**
+ * @summary List media timeline results
+ */
+export const ListTimelinesQueryParams = zod.object({
+  "storyboardId": zod.coerce.string().nullish(),
+  "status": zod.coerce.string().nullish(),
+  "limit": zod.coerce.number().nullish(),
+  "offset": zod.coerce.number().nullish()
+})
+
+export const ListTimelinesResponse = zod.object({
+  "items": zod.array(zod.object({
+  "id": zod.string(),
+  "storyboardId": zod.string(),
+  "scriptId": zod.string().nullish(),
+  "topic": zod.string(),
+  "title": zod.string().nullish(),
+  "status": zod.enum(['pending', 'running', 'completed', 'failed']),
+  "totalDurationMs": zod.number().nullish(),
+  "totalScenes": zod.number().nullish(),
+  "tracks": zod.array(zod.object({
+  "trackId": zod.string(),
+  "kind": zod.enum(['video', 'audio', 'subtitle', 'overlay']),
+  "order": zod.number(),
+  "label": zod.string(),
+  "clips": zod.array(zod.object({
+  "clipId": zod.string(),
+  "trackId": zod.string(),
+  "sceneId": zod.string(),
+  "assetId": zod.string().nullish(),
+  "assetKind": zod.string(),
+  "startMs": zod.number(),
+  "endMs": zod.number(),
+  "durationMs": zod.number(),
+  "sourceUrl": zod.string().nullish(),
+  "localPath": zod.string().nullish(),
+  "inPointMs": zod.number().optional(),
+  "outPointMs": zod.number().nullish(),
+  "volume": zod.number().optional(),
+  "opacity": zod.number().optional(),
+  "effects": zod.array(zod.object({
+
+}).passthrough()).optional()
+})),
+  "isMuted": zod.boolean().optional(),
+  "isLocked": zod.boolean().optional()
+})),
+  "scenes": zod.array(zod.object({
+  "sceneId": zod.string(),
+  "sceneNumber": zod.number(),
+  "title": zod.string(),
+  "startMs": zod.number(),
+  "endMs": zod.number(),
+  "durationMs": zod.number(),
+  "hasVideoAsset": zod.boolean().optional(),
+  "hasAudioPlaceholder": zod.boolean().optional(),
+  "assetIds": zod.array(zod.string()).optional(),
+  "transitionIn": zod.string().optional(),
+  "transitionOut": zod.string().optional(),
+  "narration": zod.string().nullish(),
+  "visualDescription": zod.string().nullish()
+})),
+  "markers": zod.array(zod.object({
+  "markerId": zod.string(),
+  "label": zod.string(),
+  "timestampMs": zod.number(),
+  "markerType": zod.string(),
+  "color": zod.string().nullish()
+})),
+  "renderPlan": zod.object({
+  "width": zod.number().optional(),
+  "height": zod.number().optional(),
+  "fps": zod.number().optional(),
+  "format": zod.string().optional(),
+  "codec": zod.string().optional(),
+  "audioCodec": zod.string().optional(),
+  "bitrateKbps": zod.number().optional(),
+  "estimatedRenderTimeMs": zod.number().nullish()
+}).optional(),
+  "metadata": zod.object({
+  "totalDurationMs": zod.number().optional(),
+  "totalScenes": zod.number().optional(),
+  "videoClipCount": zod.number().optional(),
+  "audioClipCount": zod.number().optional(),
+  "hasGaps": zod.boolean().optional(),
+  "gapCount": zod.number().optional(),
+  "transitionCount": zod.number().optional(),
+  "estimatedFileSizeBytes": zod.number().nullish(),
+  "assetCoveragePct": zod.number().optional()
+}).optional(),
+  "validationErrors": zod.array(zod.string()),
+  "logs": zod.array(zod.string()),
+  "errorMessage": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string(),
+  "completedAt": zod.string().nullish()
+})),
+  "total": zod.number()
+})
+
+
+/**
+ * @summary Build a media timeline from a storyboard
+ */
+export const buildTimelineBodyFpsMin = 24;
+export const buildTimelineBodyFpsMax = 60;
+
+
+
+export const BuildTimelineBody = zod.object({
+  "storyboardId": zod.string(),
+  "scriptId": zod.string().nullish(),
+  "renderFormat": zod.enum(['mp4', 'webm']).optional(),
+  "fps": zod.number().min(buildTimelineBodyFpsMin).max(buildTimelineBodyFpsMax).optional(),
+  "width": zod.number().optional(),
+  "height": zod.number().optional()
+})
+
+export const BuildTimelineResponse = zod.object({
+  "id": zod.string(),
+  "storyboardId": zod.string(),
+  "scriptId": zod.string().nullish(),
+  "topic": zod.string(),
+  "title": zod.string().nullish(),
+  "status": zod.enum(['pending', 'running', 'completed', 'failed']),
+  "totalDurationMs": zod.number().nullish(),
+  "totalScenes": zod.number().nullish(),
+  "tracks": zod.array(zod.object({
+  "trackId": zod.string(),
+  "kind": zod.enum(['video', 'audio', 'subtitle', 'overlay']),
+  "order": zod.number(),
+  "label": zod.string(),
+  "clips": zod.array(zod.object({
+  "clipId": zod.string(),
+  "trackId": zod.string(),
+  "sceneId": zod.string(),
+  "assetId": zod.string().nullish(),
+  "assetKind": zod.string(),
+  "startMs": zod.number(),
+  "endMs": zod.number(),
+  "durationMs": zod.number(),
+  "sourceUrl": zod.string().nullish(),
+  "localPath": zod.string().nullish(),
+  "inPointMs": zod.number().optional(),
+  "outPointMs": zod.number().nullish(),
+  "volume": zod.number().optional(),
+  "opacity": zod.number().optional(),
+  "effects": zod.array(zod.object({
+
+}).passthrough()).optional()
+})),
+  "isMuted": zod.boolean().optional(),
+  "isLocked": zod.boolean().optional()
+})),
+  "scenes": zod.array(zod.object({
+  "sceneId": zod.string(),
+  "sceneNumber": zod.number(),
+  "title": zod.string(),
+  "startMs": zod.number(),
+  "endMs": zod.number(),
+  "durationMs": zod.number(),
+  "hasVideoAsset": zod.boolean().optional(),
+  "hasAudioPlaceholder": zod.boolean().optional(),
+  "assetIds": zod.array(zod.string()).optional(),
+  "transitionIn": zod.string().optional(),
+  "transitionOut": zod.string().optional(),
+  "narration": zod.string().nullish(),
+  "visualDescription": zod.string().nullish()
+})),
+  "markers": zod.array(zod.object({
+  "markerId": zod.string(),
+  "label": zod.string(),
+  "timestampMs": zod.number(),
+  "markerType": zod.string(),
+  "color": zod.string().nullish()
+})),
+  "renderPlan": zod.object({
+  "width": zod.number().optional(),
+  "height": zod.number().optional(),
+  "fps": zod.number().optional(),
+  "format": zod.string().optional(),
+  "codec": zod.string().optional(),
+  "audioCodec": zod.string().optional(),
+  "bitrateKbps": zod.number().optional(),
+  "estimatedRenderTimeMs": zod.number().nullish()
+}).optional(),
+  "metadata": zod.object({
+  "totalDurationMs": zod.number().optional(),
+  "totalScenes": zod.number().optional(),
+  "videoClipCount": zod.number().optional(),
+  "audioClipCount": zod.number().optional(),
+  "hasGaps": zod.boolean().optional(),
+  "gapCount": zod.number().optional(),
+  "transitionCount": zod.number().optional(),
+  "estimatedFileSizeBytes": zod.number().nullish(),
+  "assetCoveragePct": zod.number().optional()
+}).optional(),
+  "validationErrors": zod.array(zod.string()),
+  "logs": zod.array(zod.string()),
+  "errorMessage": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string(),
+  "completedAt": zod.string().nullish()
+})
+
+
+/**
+ * @summary Get a timeline by ID
+ */
+export const GetTimelineParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const GetTimelineResponse = zod.object({
+  "id": zod.string(),
+  "storyboardId": zod.string(),
+  "scriptId": zod.string().nullish(),
+  "topic": zod.string(),
+  "title": zod.string().nullish(),
+  "status": zod.enum(['pending', 'running', 'completed', 'failed']),
+  "totalDurationMs": zod.number().nullish(),
+  "totalScenes": zod.number().nullish(),
+  "tracks": zod.array(zod.object({
+  "trackId": zod.string(),
+  "kind": zod.enum(['video', 'audio', 'subtitle', 'overlay']),
+  "order": zod.number(),
+  "label": zod.string(),
+  "clips": zod.array(zod.object({
+  "clipId": zod.string(),
+  "trackId": zod.string(),
+  "sceneId": zod.string(),
+  "assetId": zod.string().nullish(),
+  "assetKind": zod.string(),
+  "startMs": zod.number(),
+  "endMs": zod.number(),
+  "durationMs": zod.number(),
+  "sourceUrl": zod.string().nullish(),
+  "localPath": zod.string().nullish(),
+  "inPointMs": zod.number().optional(),
+  "outPointMs": zod.number().nullish(),
+  "volume": zod.number().optional(),
+  "opacity": zod.number().optional(),
+  "effects": zod.array(zod.object({
+
+}).passthrough()).optional()
+})),
+  "isMuted": zod.boolean().optional(),
+  "isLocked": zod.boolean().optional()
+})),
+  "scenes": zod.array(zod.object({
+  "sceneId": zod.string(),
+  "sceneNumber": zod.number(),
+  "title": zod.string(),
+  "startMs": zod.number(),
+  "endMs": zod.number(),
+  "durationMs": zod.number(),
+  "hasVideoAsset": zod.boolean().optional(),
+  "hasAudioPlaceholder": zod.boolean().optional(),
+  "assetIds": zod.array(zod.string()).optional(),
+  "transitionIn": zod.string().optional(),
+  "transitionOut": zod.string().optional(),
+  "narration": zod.string().nullish(),
+  "visualDescription": zod.string().nullish()
+})),
+  "markers": zod.array(zod.object({
+  "markerId": zod.string(),
+  "label": zod.string(),
+  "timestampMs": zod.number(),
+  "markerType": zod.string(),
+  "color": zod.string().nullish()
+})),
+  "renderPlan": zod.object({
+  "width": zod.number().optional(),
+  "height": zod.number().optional(),
+  "fps": zod.number().optional(),
+  "format": zod.string().optional(),
+  "codec": zod.string().optional(),
+  "audioCodec": zod.string().optional(),
+  "bitrateKbps": zod.number().optional(),
+  "estimatedRenderTimeMs": zod.number().nullish()
+}).optional(),
+  "metadata": zod.object({
+  "totalDurationMs": zod.number().optional(),
+  "totalScenes": zod.number().optional(),
+  "videoClipCount": zod.number().optional(),
+  "audioClipCount": zod.number().optional(),
+  "hasGaps": zod.boolean().optional(),
+  "gapCount": zod.number().optional(),
+  "transitionCount": zod.number().optional(),
+  "estimatedFileSizeBytes": zod.number().nullish(),
+  "assetCoveragePct": zod.number().optional()
+}).optional(),
+  "validationErrors": zod.array(zod.string()),
+  "logs": zod.array(zod.string()),
+  "errorMessage": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string(),
+  "completedAt": zod.string().nullish()
+})
+
+
+/**
+ * @summary Delete a timeline record
+ */
+export const DeleteTimelineParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const DeleteTimelineResponse = zod.void()
+
+
+/**
  * @summary List script results
  */
 export const ListScriptsQueryParams = zod.object({

@@ -7,3 +7,4 @@ export * from "./research";
 export * from "./scripts";
 export * from "./storyboards";
 export * from "./assets";
+export * from "./timelines";

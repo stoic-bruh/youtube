@@ -64,7 +64,7 @@ router.post("/", async (req, res) => {
   try {
     const parsed = insertProjectSchema.safeParse(req.body);
     if (!parsed.success) {
-      return res.status(400).json({ error: "Invalid request", details: parsed.error });
+      res.status(400).json({ error: "Invalid request", details: parsed.error }); return;
     }
     const [project] = await db
       .insert(projectsTable)
@@ -84,7 +84,7 @@ router.get("/:id", async (req, res) => {
       .select()
       .from(projectsTable)
       .where(eq(projectsTable.id, req.params.id));
-    if (!project) return res.status(404).json({ error: "Not found" });
+    if (!project) { res.status(404).json({ error: "Not found" }); return; }
     res.json(project);
   } catch (err) {
     req.log.error(err);
@@ -98,14 +98,14 @@ router.patch("/:id", async (req, res) => {
     const updateSchema = insertProjectSchema.partial();
     const parsed = updateSchema.safeParse(req.body);
     if (!parsed.success) {
-      return res.status(400).json({ error: "Invalid request", details: parsed.error });
+      res.status(400).json({ error: "Invalid request", details: parsed.error }); return;
     }
     const [project] = await db
       .update(projectsTable)
       .set({ ...parsed.data, updatedAt: new Date() })
       .where(eq(projectsTable.id, req.params.id))
       .returning();
-    if (!project) return res.status(404).json({ error: "Not found" });
+    if (!project) { res.status(404).json({ error: "Not found" }); return; }
     res.json(project);
   } catch (err) {
     req.log.error(err);
@@ -120,7 +120,7 @@ router.delete("/:id", async (req, res) => {
       .delete(projectsTable)
       .where(eq(projectsTable.id, req.params.id))
       .returning();
-    if (!deleted) return res.status(404).json({ error: "Not found" });
+    if (!deleted) { res.status(404).json({ error: "Not found" }); return; }
     res.status(204).send();
   } catch (err) {
     req.log.error(err);
@@ -135,7 +135,7 @@ router.post("/:id/run", async (req, res) => {
       .select()
       .from(projectsTable)
       .where(eq(projectsTable.id, req.params.id));
-    if (!project) return res.status(404).json({ error: "Not found" });
+    if (!project) { res.status(404).json({ error: "Not found" }); return; }
 
     // Create pipeline
     const [pipeline] = await db

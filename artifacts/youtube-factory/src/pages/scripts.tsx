@@ -489,11 +489,11 @@ function ScriptDetailPanel({ selectedId, onClose }: { selectedId: string; onClos
                       <VisualCueList cues={script.visualCues as object[] | undefined} />
                     </div>
 
-                    {(script.pronunciationHints as object[] | undefined)?.length > 0 && (
+                    {((script.pronunciationHints as object[] | undefined)?.length ?? 0) > 0 && (
                       <PronunciationList hints={script.pronunciationHints as object[] | undefined} />
                     )}
 
-                    {(script.emphasisMarkers as object[] | undefined)?.length > 0 && (
+                    {((script.emphasisMarkers as object[] | undefined)?.length ?? 0) > 0 && (
                       <div>
                         <div className="text-[10px] font-mono font-bold uppercase tracking-widest text-muted-foreground mb-3">
                           Emphasis Markers ({(script.emphasisMarkers as object[]).length})
@@ -508,7 +508,7 @@ function ScriptDetailPanel({ selectedId, onClose }: { selectedId: string; onClos
                       </div>
                     )}
 
-                    {(script.pauses as object[] | undefined)?.length > 0 && (
+                    {((script.pauses as object[] | undefined)?.length ?? 0) > 0 && (
                       <div>
                         <div className="text-[10px] font-mono font-bold uppercase tracking-widest text-muted-foreground mb-3">
                           Strategic Pauses ({(script.pauses as object[]).length})
@@ -600,8 +600,8 @@ export default function ScriptsPage() {
     startMutation.mutate({
       data: {
         topic: values.topic,
-        style: values.style,
-        tone: values.tone,
+        style: values.style as never,
+        tone: values.tone as never,
         targetDurationMinutes: values.targetDurationMinutes,
         providers: values.providers,
       },

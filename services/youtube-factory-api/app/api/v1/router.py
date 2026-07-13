@@ -29,3 +29,6 @@ router.include_router(settings.router, prefix="/settings", tags=["settings"])
 
 from app.api.v1.endpoints import assets  # noqa: E402
 router.include_router(assets.router, tags=["assets"])
+
+from app.api.v1.endpoints import timelines  # noqa: E402
+router.include_router(timelines.router, tags=["timelines"])

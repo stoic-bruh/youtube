@@ -10,6 +10,7 @@ import jobsRouter from "./jobs";
 import analyticsRouter from "./analytics";
 import logsRouter from "./logs";
 import settingsRouter from "./settings";
+import timelinesRouter from "./timelines";
 
 const router: IRouter = Router();
 
@@ -18,6 +19,7 @@ router.use("/research", researchRouter);
 router.use("/scripts", scriptsRouter);
 router.use("/storyboards", storyboardsRouter);
 router.use("/assets", assetsRouter);
+router.use("/timelines", timelinesRouter);
 router.use("/projects", projectsRouter);
 router.use("/pipelines", pipelinesRouter);
 router.use("/jobs", jobsRouter);

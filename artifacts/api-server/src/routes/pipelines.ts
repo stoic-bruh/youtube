@@ -40,7 +40,7 @@ router.get("/:id", async (req, res) => {
       .select()
       .from(pipelinesTable)
       .where(eq(pipelinesTable.id, req.params.id));
-    if (!pipeline) return res.status(404).json({ error: "Not found" });
+    if (!pipeline) { res.status(404).json({ error: "Not found" }); return; }
     res.json(pipeline);
   } catch (err) {
     req.log.error(err);
@@ -56,7 +56,7 @@ router.post("/:id/cancel", async (req, res) => {
       .set({ status: "cancelled", completedAt: new Date() })
       .where(eq(pipelinesTable.id, req.params.id))
       .returning();
-    if (!pipeline) return res.status(404).json({ error: "Not found" });
+    if (!pipeline) { res.status(404).json({ error: "Not found" }); return; }
 
     // Reflect on project
     await db
@@ -79,9 +79,18 @@ router.post("/:id/retry", async (req, res) => {
       .from(pipelinesTable)
       .where(eq(pipelinesTable.id, req.params.id));
     const existing = existingRows[0];
-    if (!existing) return res.status(404).json({ error: "Not found" });
+    if (!existing) { res.status(404).json({ error: "Not found" }); return; }
 
-    const resetStages = (existing.stages as Array<Record<string, unknown>>).map((s) => ({
+    type PipelineStage = {
+      name: string;
+      status: "pending" | "running" | "completed" | "failed" | "skipped";
+      order: number;
+      startedAt: string | null;
+      completedAt: string | null;
+      durationMs: number | null;
+      error: string | null;
+    };
+    const resetStages = (existing.stages as PipelineStage[]).map((s): PipelineStage => ({
       ...s,
       status: s.status === "completed" ? "completed" : "pending",
       error: null,
