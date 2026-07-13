@@ -17,6 +17,7 @@ celery_app = Celery(
         "app.tasks.voice_tasks",
         "app.tasks.media_tasks",
         "app.tasks.upload_tasks",
+        "app.tasks.render_tasks",
     ],
 )
 
@@ -47,6 +48,7 @@ celery_app.conf.update(
         "app.tasks.voice_tasks.*": {"queue": "voice"},
         "app.tasks.media_tasks.*": {"queue": "media"},
         "app.tasks.upload_tasks.*": {"queue": "upload"},
+        "app.tasks.render_tasks.*": {"queue": "render"},
     },
     # Queue definitions
     task_queues_max_priority=10,

@@ -34,3 +34,6 @@ router.include_router(assets.router, tags=["assets"])
 
 from app.api.v1.endpoints import timelines  # noqa: E402
 router.include_router(timelines.router, tags=["timelines"])
+
+from app.api.v1.endpoints import render  # noqa: E402
+router.include_router(render.router, tags=["renders"])

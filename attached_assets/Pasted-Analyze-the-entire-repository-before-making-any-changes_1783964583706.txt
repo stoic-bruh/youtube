@@ -1,0 +1,301 @@
+Analyze the entire repository before making any changes.
+
+Current Project Status
+
+✅ Production Architecture
+✅ Infrastructure
+✅ Research Service
+✅ Script Service
+✅ Storyboard Service
+✅ Asset Intelligence Engine
+✅ Media Timeline Engine
+✅ Voice Engine
+
+====================================================
+
+IMPORTANT
+
+Do NOT regenerate completed modules.
+
+Do NOT rewrite working implementations.
+
+Preserve the architecture.
+
+Do NOT modify existing services except where required for integration.
+
+====================================================
+
+PHASE 1 — AUDIT
+
+Audit every module involved in rendering:
+
+Timeline
+
+Assets
+
+Voice
+
+Determine:
+
+- integration points
+- missing interfaces
+- missing render components
+- missing database models
+- missing API routes
+- missing frontend pages
+- compilation issues
+- runtime issues
+
+Produce a concise audit report.
+
+====================================================
+
+PHASE 2 — IMPLEMENT THE MOVIEPY RENDER ENGINE
+
+Build a production-grade rendering pipeline.
+
+Implement:
+
+RenderService
+
+RenderRepository
+
+RenderJob
+
+RenderQueue
+
+RenderPlan
+
+RenderScene
+
+RenderClip
+
+RenderAudioTrack
+
+RenderVideoTrack
+
+RenderTransition
+
+RenderOutput
+
+RenderMetadata
+
+====================================================
+
+Input
+
+TimelineResult
+
+VoiceResult
+
+AssetCollection
+
+====================================================
+
+Output
+
+Final MP4
+
+Preview MP4
+
+Project Metadata
+
+Render Statistics
+
+====================================================
+
+Implement
+
+MoviePy pipeline
+
+FFmpeg integration
+
+Scene stitching
+
+Image clips
+
+Video clips
+
+Ken Burns animation
+
+Pan
+
+Zoom
+
+Crossfade
+
+Fade In
+
+Fade Out
+
+Scene transitions
+
+Background music track
+
+Sound effects track
+
+Voice synchronization
+
+Timeline synchronization
+
+Render progress
+
+Retry logic
+
+====================================================
+
+Render Features
+
+Resolution
+
+720p
+
+1080p
+
+4K (placeholder)
+
+FPS
+
+24
+
+30
+
+60
+
+Aspect Ratios
+
+16:9
+
+9:16
+
+1:1
+
+Background Blur
+
+Safe Crop
+
+Letterboxing
+
+Hardware acceleration interface (placeholder)
+
+====================================================
+
+Backend
+
+Implement
+
+SQLAlchemy models
+
+Repository
+
+FastAPI endpoints
+
+Celery render workers
+
+OpenAPI
+
+Generated API client
+
+Express routes
+
+====================================================
+
+Frontend
+
+Create Render Studio.
+
+Include
+
+Render Queue
+
+Live Progress
+
+Preview Player
+
+Timeline Preview
+
+Render Statistics
+
+Logs
+
+Output Browser
+
+Download Manager
+
+====================================================
+
+Verification
+
+Run
+
+Python tests
+
+Frontend build
+
+Backend build
+
+TypeScript typecheck
+
+API smoke tests
+
+End-to-end render
+
+Generate a sample video from:
+
+Research
+
+↓
+
+Script
+
+↓
+
+Storyboard
+
+↓
+
+Assets
+
+↓
+
+Timeline
+
+↓
+
+Voice
+
+↓
+
+MoviePy
+
+Verify the final MP4 is successfully created.
+
+====================================================
+
+IMPORTANT
+
+Implement the Render Engine using real MoviePy and FFmpeg.
+
+Use placeholder providers only where external APIs are required.
+
+Keep the architecture modular so another renderer can replace MoviePy in the future.
+
+====================================================
+
+STOP
+
+Do NOT implement:
+
+Subtitle Engine
+
+Thumbnail Engine
+
+SEO Engine
+
+Upload Engine
+
+Analytics
+
+Autonomous Orchestrator
+
+Commit only Render Engine related changes.
