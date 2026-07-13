@@ -443,3 +443,110 @@ service?: string | null;
 limit?: number | null;
 };
 
+// ── Script types ──────────────────────────────────────────────────────────────
+
+export interface ScriptInput {
+  /** @nullable */
+  researchId?: string | null;
+  topic: string;
+  style?: string;
+  tone?: string;
+  language?: string;
+  targetAudience?: string;
+  targetDurationMinutes?: number;
+  providers?: string[];
+}
+
+export interface ScriptSection {
+  sectionType: string;
+  title: string;
+  content: string;
+  wordCount?: number;
+  durationSeconds?: number;
+  order?: number;
+  /** @nullable */
+  transitionIn?: string | null;
+  /** @nullable */
+  transitionOut?: string | null;
+  /** @nullable */
+  storytellingNotes?: string | null;
+  /** @nullable */
+  visualSuggestion?: string | null;
+}
+
+export type ScriptResultStatus = typeof ScriptResultStatus[keyof typeof ScriptResultStatus];
+
+export const ScriptResultStatus = {
+  pending: 'pending',
+  running: 'running',
+  completed: 'completed',
+  failed: 'failed',
+  cached: 'cached',
+} as const;
+
+export interface ScriptResult {
+  id: string;
+  /** @nullable */
+  researchId?: string | null;
+  topic: string;
+  /** @nullable */
+  title?: string | null;
+  status: ScriptResultStatus;
+  style?: string;
+  tone?: string;
+  language?: string;
+  targetAudience?: string;
+  targetDurationMinutes?: number;
+  version?: number;
+  /** @nullable */
+  hook?: string | null;
+  /** @nullable */
+  introduction?: string | null;
+  /** @nullable */
+  outro?: string | null;
+  /** @nullable */
+  callToAction?: string | null;
+  sections: ScriptSection[];
+  /** @nullable */
+  wordCount?: number | null;
+  /** @nullable */
+  estimatedDurationSeconds?: number | null;
+  /** @nullable */
+  readingTimeSeconds?: number | null;
+  /** @nullable */
+  sceneCount?: number | null;
+  /** @nullable */
+  pacingWpm?: number | null;
+  narrationTiming?: object[];
+  emphasisMarkers?: object[];
+  pauses?: object[];
+  pronunciationHints?: object[];
+  visualCues?: object[];
+  versions?: object[];
+  providers: string[];
+  usedProviders: string[];
+  /** @nullable */
+  jobId?: string | null;
+  logs: string[];
+  /** @nullable */
+  errorMessage?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  /** @nullable */
+  completedAt?: string | null;
+}
+
+export interface ScriptList {
+  items: ScriptResult[];
+  total: number;
+}
+
+export type ListScriptsParams = {
+/** @nullable */
+status?: string | null;
+/** @nullable */
+limit?: number | null;
+/** @nullable */
+offset?: number | null;
+};
+

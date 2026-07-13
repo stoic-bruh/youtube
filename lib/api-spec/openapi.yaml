@@ -26,6 +26,8 @@ tags:
     description: System log access
   - name: research
     description: AI research service
+  - name: scripts
+    description: AI script generation service
 
 paths:
   # ── Research ──────────────────────────────────────────────────────────────
@@ -96,6 +98,84 @@ paths:
       operationId: deleteResearch
       tags: [research]
       summary: Delete a research result
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Deleted
+
+  # ── Scripts ───────────────────────────────────────────────────────────────
+  /scripts:
+    get:
+      operationId: listScripts
+      tags: [scripts]
+      summary: List script results
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: ["string", "null"]
+        - name: limit
+          in: query
+          schema:
+            type: ["integer", "null"]
+        - name: offset
+          in: query
+          schema:
+            type: ["integer", "null"]
+      responses:
+        "200":
+          description: Script list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScriptList"
+    post:
+      operationId: startScript
+      tags: [scripts]
+      summary: Start an async script-generation job
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ScriptInput"
+      responses:
+        "202":
+          description: Script job started
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScriptResult"
+
+  /scripts/{id}:
+    get:
+      operationId: getScript
+      tags: [scripts]
+      summary: Get script result by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Script result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScriptResult"
+        "404":
+          description: Not found
+    delete:
+      operationId: deleteScript
+      tags: [scripts]
+      summary: Delete a script result
       parameters:
         - name: id
           in: path
@@ -873,3 +953,109 @@ components:
         defaultVideoQuality: { type: string }
         notificationsEmail:  { type: string }
         webhookUrl:          { type: string }
+
+    # ── Scripts ───────────────────────────────────────────────────────────────
+    ScriptInput:
+      type: object
+      required: [topic]
+      properties:
+        researchId:            { type: ["string", "null"] }
+        topic:                 { type: string, minLength: 3, maxLength: 500 }
+        style:
+          type: string
+          enum: [educational, documentary, storytelling, tutorial, news, long_form, shorts]
+        tone:
+          type: string
+          enum: [engaging, authoritative, casual, inspirational, conversational]
+        language:              { type: string }
+        targetAudience:        { type: string }
+        targetDurationMinutes: { type: integer, minimum: 1, maximum: 120 }
+        providers:
+          type: array
+          items: { type: string }
+
+    ScriptSection:
+      type: object
+      required: [sectionType, title, content]
+      properties:
+        sectionType:        { type: string }
+        title:              { type: string }
+        content:            { type: string }
+        wordCount:          { type: integer }
+        durationSeconds:    { type: number }
+        order:              { type: integer }
+        transitionIn:       { type: ["string", "null"] }
+        transitionOut:      { type: ["string", "null"] }
+        storytellingNotes:  { type: ["string", "null"] }
+        visualSuggestion:   { type: ["string", "null"] }
+
+    ScriptResult:
+      type: object
+      required: [id, topic, status, providers, usedProviders, sections, logs, createdAt, updatedAt]
+      properties:
+        id:                      { type: string }
+        researchId:              { type: ["string", "null"] }
+        topic:                   { type: string }
+        title:                   { type: ["string", "null"] }
+        status:
+          type: string
+          enum: [pending, running, completed, failed, cached]
+        style:                   { type: string }
+        tone:                    { type: string }
+        language:                { type: string }
+        targetAudience:          { type: string }
+        targetDurationMinutes:   { type: integer }
+        version:                 { type: integer }
+        hook:                    { type: ["string", "null"] }
+        introduction:            { type: ["string", "null"] }
+        outro:                   { type: ["string", "null"] }
+        callToAction:            { type: ["string", "null"] }
+        sections:
+          type: array
+          items: { $ref: "#/components/schemas/ScriptSection" }
+        wordCount:               { type: ["integer", "null"] }
+        estimatedDurationSeconds:{ type: ["integer", "null"] }
+        readingTimeSeconds:      { type: ["integer", "null"] }
+        sceneCount:              { type: ["integer", "null"] }
+        pacingWpm:               { type: ["number", "null"] }
+        narrationTiming:
+          type: array
+          items: { type: object }
+        emphasisMarkers:
+          type: array
+          items: { type: object }
+        pauses:
+          type: array
+          items: { type: object }
+        pronunciationHints:
+          type: array
+          items: { type: object }
+        visualCues:
+          type: array
+          items: { type: object }
+        versions:
+          type: array
+          items: { type: object }
+        providers:
+          type: array
+          items: { type: string }
+        usedProviders:
+          type: array
+          items: { type: string }
+        jobId:          { type: ["string", "null"] }
+        logs:
+          type: array
+          items: { type: string }
+        errorMessage:   { type: ["string", "null"] }
+        createdAt:      { type: string }
+        updatedAt:      { type: string }
+        completedAt:    { type: ["string", "null"] }
+
+    ScriptList:
+      type: object
+      required: [items, total]
+      properties:
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/ScriptResult" }
+        total: { type: integer }
