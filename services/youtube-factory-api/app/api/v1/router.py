@@ -12,6 +12,7 @@ from app.api.v1.endpoints import (
     research,
     script,
     storyboard,
+    voice,
 )
 
 router = APIRouter(prefix="/api/v1")
@@ -20,6 +21,7 @@ router.include_router(health.router, tags=["health"])
 router.include_router(research.router, prefix="/research", tags=["research"])
 router.include_router(script.router, tags=["scripts"])
 router.include_router(storyboard.router, tags=["storyboards"])
+router.include_router(voice.router, tags=["voices"])
 router.include_router(projects.router, prefix="/projects", tags=["projects"])
 router.include_router(pipelines.router, prefix="/pipelines", tags=["pipelines"])
 router.include_router(jobs.router, prefix="/jobs", tags=["jobs"])
