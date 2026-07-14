@@ -1,0 +1,178 @@
+Analyze the entire repository before making any changes.
+
+Current Project Status
+
+✅ Production Architecture
+✅ Infrastructure
+✅ Research Service
+✅ Script Service
+✅ Storyboard Service
+✅ Asset Intelligence Engine
+✅ Media Timeline Engine
+✅ Voice Engine
+✅ MoviePy Render Engine
+🟡 Post-Processing Engine partially implemented
+
+====================================================
+
+IMPORTANT
+
+Do NOT regenerate completed backend code.
+
+Do NOT rewrite working implementations.
+
+Preserve the current architecture.
+
+====================================================
+
+PHASE 1 — AUDIT
+
+Audit every Post-Processing related file.
+
+Include:
+
+Subtitle Engine
+
+Thumbnail Engine
+
+Chapter Engine
+
+Production Asset Engine
+
+Determine exactly:
+
+- completed files
+- partially implemented files
+- missing files
+- compile errors
+- runtime issues
+- integration gaps
+
+Produce a concise audit report before making changes.
+
+====================================================
+
+PHASE 2 — COMPLETE THE POST-PROCESSING ENGINE
+
+Complete ONLY the remaining work.
+
+Implement:
+
+OpenAPI paths
+
+Generated React Query client
+
+Generated Zod client
+
+Express routes (verify and complete)
+
+React Production Studio
+
+Subtitle Manager
+
+Subtitle Preview
+
+Caption Style Editor
+
+Caption Presets
+
+Thumbnail Browser
+
+Thumbnail Preview
+
+Frame Selector
+
+Chapter Editor
+
+Production Asset Browser
+
+Export Manager
+
+Processing Queue
+
+Logs
+
+Statistics Dashboard
+
+====================================================
+
+Subtitle Engine
+
+Generate from a REAL rendered MP4:
+
+- Whisper transcription
+- Word timestamps
+- Sentence timestamps
+- Paragraph timestamps
+- SRT
+- VTT
+- ASS
+- Burned caption metadata
+- Karaoke timing metadata
+
+====================================================
+
+Thumbnail Engine
+
+Generate:
+
+- 3 thumbnail candidates
+- Automatic best frame selection
+- Sharpness scoring
+- Safe text regions
+- Title overlay metadata
+- Thumbnail quality score
+
+====================================================
+
+Chapter Engine
+
+Generate:
+
+- Chapter titles
+- Start timestamps
+- End timestamps
+- Descriptions
+
+Export YouTube-ready chapters.
+
+====================================================
+
+Verification
+
+Run:
+
+- Python tests
+- Frontend build
+- Backend build
+- TypeScript typecheck
+- API smoke tests
+
+Generate from a REAL rendered video:
+
+- SRT
+- VTT
+- ASS
+- Three thumbnail images
+- Chapter file
+
+Verify all generated assets exist and are downloadable.
+
+====================================================
+
+FINAL REPORT
+
+Report:
+
+1. Files created
+2. Files modified
+3. Tests executed
+4. Generated assets
+5. Verification results
+6. Remaining work (if any)
+
+Commit only Post-Processing Engine changes.
+
+STOP.
+
+Do NOT begin the SEO Engine.

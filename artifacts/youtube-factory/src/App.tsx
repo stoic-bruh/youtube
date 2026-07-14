@@ -19,6 +19,7 @@ import AssetsPage from '@/pages/assets';
 import TimelinesPage from '@/pages/timelines';
 import VoicesPage from '@/pages/voices';
 import RenderStudioPage from '@/pages/render-studio';
+import ProductionStudioPage from '@/pages/production-studio';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -41,6 +42,7 @@ function Router() {
         <Route path="/timelines" component={TimelinesPage} />
         <Route path="/voices" component={VoicesPage} />
         <Route path="/render" component={RenderStudioPage} />
+        <Route path="/production" component={ProductionStudioPage} />
         <Route path="/projects" component={Projects} />
         <Route path="/projects/:id" component={ProjectDetail} />
         <Route path="/pipelines" component={Pipelines} />
