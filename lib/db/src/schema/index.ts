@@ -10,3 +10,7 @@ export * from "./assets";
 export * from "./timelines";
 export * from "./voices";
 export * from "./renders";
+export * from "./subtitles";
+export * from "./thumbnails";
+export * from "./chapters";
+export * from "./production-assets";

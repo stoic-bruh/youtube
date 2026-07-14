@@ -1639,6 +1639,675 @@ export const GetRenderProviderStatsResponse = zod.object({
 
 
 /**
+ * @summary List subtitle jobs
+ */
+export const ListSubtitlesQueryParams = zod.object({
+  "renderId": zod.coerce.string().nullish(),
+  "status": zod.coerce.string().nullish(),
+  "limit": zod.coerce.number().nullish(),
+  "offset": zod.coerce.number().nullish()
+})
+
+export const ListSubtitlesResponse = zod.object({
+  "items": zod.array(zod.object({
+  "id": zod.string(),
+  "renderId": zod.string(),
+  "status": zod.enum(['pending', 'running', 'completed', 'failed']),
+  "language": zod.string().optional(),
+  "usedProvider": zod.string().nullish(),
+  "providers": zod.array(zod.string()).optional(),
+  "words": zod.array(zod.object({
+  "word": zod.string(),
+  "startMs": zod.number(),
+  "endMs": zod.number(),
+  "confidence": zod.number(),
+  "speaker": zod.string().nullish()
+})),
+  "sentences": zod.array(zod.object({
+  "text": zod.string(),
+  "startMs": zod.number(),
+  "endMs": zod.number(),
+  "confidence": zod.number().optional(),
+  "speaker": zod.string().nullish()
+})),
+  "paragraphs": zod.array(zod.object({
+  "text": zod.string(),
+  "startMs": zod.number(),
+  "endMs": zod.number()
+})),
+  "srtContent": zod.string().nullish(),
+  "vttContent": zod.string().nullish(),
+  "assContent": zod.string().nullish(),
+  "srtPath": zod.string().nullish(),
+  "vttPath": zod.string().nullish(),
+  "assPath": zod.string().nullish(),
+  "burnedMetadata": zod.record(zod.string(), zod.unknown()).optional(),
+  "animatedCaptionMetadata": zod.record(zod.string(), zod.unknown()).optional(),
+  "karaokeMetadata": zod.record(zod.string(), zod.unknown()).optional(),
+  "style": zod.record(zod.string(), zod.unknown()).optional(),
+  "captionPresets": zod.array(zod.record(zod.string(), zod.unknown())).optional(),
+  "speakerMetadata": zod.array(zod.record(zod.string(), zod.unknown())).optional(),
+  "avgConfidence": zod.number().nullish(),
+  "wordCount": zod.number().nullish(),
+  "durationMs": zod.number().nullish(),
+  "logs": zod.array(zod.string()),
+  "errorMessage": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string(),
+  "completedAt": zod.string().nullish()
+})),
+  "total": zod.number()
+})
+
+
+/**
+ * @summary Transcribe a completed render's audio and generate SRT/VTT/ASS captions
+ */
+export const StartSubtitleBody = zod.object({
+  "renderId": zod.string(),
+  "language": zod.string().optional(),
+  "providers": zod.array(zod.enum(['whisper', 'script-narration'])).optional()
+})
+
+export const StartSubtitleResponse = zod.object({
+  "id": zod.string(),
+  "renderId": zod.string(),
+  "status": zod.enum(['pending', 'running', 'completed', 'failed']),
+  "language": zod.string().optional(),
+  "usedProvider": zod.string().nullish(),
+  "providers": zod.array(zod.string()).optional(),
+  "words": zod.array(zod.object({
+  "word": zod.string(),
+  "startMs": zod.number(),
+  "endMs": zod.number(),
+  "confidence": zod.number(),
+  "speaker": zod.string().nullish()
+})),
+  "sentences": zod.array(zod.object({
+  "text": zod.string(),
+  "startMs": zod.number(),
+  "endMs": zod.number(),
+  "confidence": zod.number().optional(),
+  "speaker": zod.string().nullish()
+})),
+  "paragraphs": zod.array(zod.object({
+  "text": zod.string(),
+  "startMs": zod.number(),
+  "endMs": zod.number()
+})),
+  "srtContent": zod.string().nullish(),
+  "vttContent": zod.string().nullish(),
+  "assContent": zod.string().nullish(),
+  "srtPath": zod.string().nullish(),
+  "vttPath": zod.string().nullish(),
+  "assPath": zod.string().nullish(),
+  "burnedMetadata": zod.record(zod.string(), zod.unknown()).optional(),
+  "animatedCaptionMetadata": zod.record(zod.string(), zod.unknown()).optional(),
+  "karaokeMetadata": zod.record(zod.string(), zod.unknown()).optional(),
+  "style": zod.record(zod.string(), zod.unknown()).optional(),
+  "captionPresets": zod.array(zod.record(zod.string(), zod.unknown())).optional(),
+  "speakerMetadata": zod.array(zod.record(zod.string(), zod.unknown())).optional(),
+  "avgConfidence": zod.number().nullish(),
+  "wordCount": zod.number().nullish(),
+  "durationMs": zod.number().nullish(),
+  "logs": zod.array(zod.string()),
+  "errorMessage": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string(),
+  "completedAt": zod.string().nullish()
+})
+
+
+/**
+ * @summary Get a subtitle result by ID
+ */
+export const GetSubtitleParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const GetSubtitleResponse = zod.object({
+  "id": zod.string(),
+  "renderId": zod.string(),
+  "status": zod.enum(['pending', 'running', 'completed', 'failed']),
+  "language": zod.string().optional(),
+  "usedProvider": zod.string().nullish(),
+  "providers": zod.array(zod.string()).optional(),
+  "words": zod.array(zod.object({
+  "word": zod.string(),
+  "startMs": zod.number(),
+  "endMs": zod.number(),
+  "confidence": zod.number(),
+  "speaker": zod.string().nullish()
+})),
+  "sentences": zod.array(zod.object({
+  "text": zod.string(),
+  "startMs": zod.number(),
+  "endMs": zod.number(),
+  "confidence": zod.number().optional(),
+  "speaker": zod.string().nullish()
+})),
+  "paragraphs": zod.array(zod.object({
+  "text": zod.string(),
+  "startMs": zod.number(),
+  "endMs": zod.number()
+})),
+  "srtContent": zod.string().nullish(),
+  "vttContent": zod.string().nullish(),
+  "assContent": zod.string().nullish(),
+  "srtPath": zod.string().nullish(),
+  "vttPath": zod.string().nullish(),
+  "assPath": zod.string().nullish(),
+  "burnedMetadata": zod.record(zod.string(), zod.unknown()).optional(),
+  "animatedCaptionMetadata": zod.record(zod.string(), zod.unknown()).optional(),
+  "karaokeMetadata": zod.record(zod.string(), zod.unknown()).optional(),
+  "style": zod.record(zod.string(), zod.unknown()).optional(),
+  "captionPresets": zod.array(zod.record(zod.string(), zod.unknown())).optional(),
+  "speakerMetadata": zod.array(zod.record(zod.string(), zod.unknown())).optional(),
+  "avgConfidence": zod.number().nullish(),
+  "wordCount": zod.number().nullish(),
+  "durationMs": zod.number().nullish(),
+  "logs": zod.array(zod.string()),
+  "errorMessage": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string(),
+  "completedAt": zod.string().nullish()
+})
+
+
+/**
+ * @summary Delete a subtitle record
+ */
+export const DeleteSubtitleParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const DeleteSubtitleResponse = zod.void()
+
+
+/**
+ * @summary Download a subtitle export file (SRT/VTT/ASS)
+ */
+export const GetSubtitleFileParams = zod.object({
+  "id": zod.coerce.string(),
+  "format": zod.enum(['srt', 'vtt', 'ass'])
+})
+
+export const GetSubtitleFileResponse = zod.unknown()
+
+
+/**
+ * @summary List thumbnail jobs
+ */
+export const ListThumbnailsQueryParams = zod.object({
+  "renderId": zod.coerce.string().nullish(),
+  "status": zod.coerce.string().nullish(),
+  "limit": zod.coerce.number().nullish(),
+  "offset": zod.coerce.number().nullish()
+})
+
+export const ListThumbnailsResponse = zod.object({
+  "items": zod.array(zod.object({
+  "id": zod.string(),
+  "renderId": zod.string(),
+  "status": zod.enum(['pending', 'running', 'completed', 'failed']),
+  "candidates": zod.array(zod.object({
+  "candidateId": zod.string(),
+  "timestampMs": zod.number(),
+  "path": zod.string(),
+  "width": zod.number(),
+  "height": zod.number(),
+  "sharpnessScore": zod.number(),
+  "qualityScore": zod.number(),
+  "brightness": zod.number(),
+  "dominantColor": zod.string().nullish(),
+  "faceDetected": zod.boolean().nullish(),
+  "objectsDetected": zod.array(zod.string()).optional(),
+  "safeTextRegions": zod.array(zod.record(zod.string(), zod.unknown())).optional()
+})),
+  "selectedCandidateIds": zod.array(zod.string()),
+  "templates": zod.array(zod.record(zod.string(), zod.unknown())).optional(),
+  "titleOverlay": zod.record(zod.string(), zod.unknown()).optional(),
+  "brandColors": zod.array(zod.string()).optional(),
+  "logs": zod.array(zod.string()),
+  "errorMessage": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string(),
+  "completedAt": zod.string().nullish()
+})),
+  "total": zod.number()
+})
+
+
+/**
+ * @summary Extract and score candidate thumbnail frames from a completed render
+ */
+export const startThumbnailBodyCountMax = 10;
+
+
+
+export const StartThumbnailBody = zod.object({
+  "renderId": zod.string(),
+  "count": zod.number().min(1).max(startThumbnailBodyCountMax).optional()
+})
+
+export const StartThumbnailResponse = zod.object({
+  "id": zod.string(),
+  "renderId": zod.string(),
+  "status": zod.enum(['pending', 'running', 'completed', 'failed']),
+  "candidates": zod.array(zod.object({
+  "candidateId": zod.string(),
+  "timestampMs": zod.number(),
+  "path": zod.string(),
+  "width": zod.number(),
+  "height": zod.number(),
+  "sharpnessScore": zod.number(),
+  "qualityScore": zod.number(),
+  "brightness": zod.number(),
+  "dominantColor": zod.string().nullish(),
+  "faceDetected": zod.boolean().nullish(),
+  "objectsDetected": zod.array(zod.string()).optional(),
+  "safeTextRegions": zod.array(zod.record(zod.string(), zod.unknown())).optional()
+})),
+  "selectedCandidateIds": zod.array(zod.string()),
+  "templates": zod.array(zod.record(zod.string(), zod.unknown())).optional(),
+  "titleOverlay": zod.record(zod.string(), zod.unknown()).optional(),
+  "brandColors": zod.array(zod.string()).optional(),
+  "logs": zod.array(zod.string()),
+  "errorMessage": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string(),
+  "completedAt": zod.string().nullish()
+})
+
+
+/**
+ * @summary Get a thumbnail result by ID
+ */
+export const GetThumbnailParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const GetThumbnailResponse = zod.object({
+  "id": zod.string(),
+  "renderId": zod.string(),
+  "status": zod.enum(['pending', 'running', 'completed', 'failed']),
+  "candidates": zod.array(zod.object({
+  "candidateId": zod.string(),
+  "timestampMs": zod.number(),
+  "path": zod.string(),
+  "width": zod.number(),
+  "height": zod.number(),
+  "sharpnessScore": zod.number(),
+  "qualityScore": zod.number(),
+  "brightness": zod.number(),
+  "dominantColor": zod.string().nullish(),
+  "faceDetected": zod.boolean().nullish(),
+  "objectsDetected": zod.array(zod.string()).optional(),
+  "safeTextRegions": zod.array(zod.record(zod.string(), zod.unknown())).optional()
+})),
+  "selectedCandidateIds": zod.array(zod.string()),
+  "templates": zod.array(zod.record(zod.string(), zod.unknown())).optional(),
+  "titleOverlay": zod.record(zod.string(), zod.unknown()).optional(),
+  "brandColors": zod.array(zod.string()).optional(),
+  "logs": zod.array(zod.string()),
+  "errorMessage": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string(),
+  "completedAt": zod.string().nullish()
+})
+
+
+/**
+ * @summary Delete a thumbnail record
+ */
+export const DeleteThumbnailParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const DeleteThumbnailResponse = zod.void()
+
+
+/**
+ * @summary Download a candidate thumbnail JPEG by candidate ID
+ */
+export const GetThumbnailFileParams = zod.object({
+  "id": zod.coerce.string(),
+  "candidateId": zod.coerce.string()
+})
+
+export const GetThumbnailFileResponse = zod.unknown()
+
+
+/**
+ * @summary List chapter jobs
+ */
+export const ListChaptersQueryParams = zod.object({
+  "renderId": zod.coerce.string().nullish(),
+  "status": zod.coerce.string().nullish(),
+  "limit": zod.coerce.number().nullish(),
+  "offset": zod.coerce.number().nullish()
+})
+
+export const ListChaptersResponse = zod.object({
+  "items": zod.array(zod.object({
+  "id": zod.string(),
+  "renderId": zod.string(),
+  "status": zod.enum(['pending', 'running', 'completed', 'failed']),
+  "chapters": zod.array(zod.object({
+  "title": zod.string(),
+  "startMs": zod.number(),
+  "endMs": zod.number(),
+  "description": zod.string().nullish()
+})),
+  "youtubeExport": zod.string().nullish(),
+  "sources": zod.record(zod.string(), zod.unknown()).optional(),
+  "logs": zod.array(zod.string()),
+  "errorMessage": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string(),
+  "completedAt": zod.string().nullish()
+})),
+  "total": zod.number()
+})
+
+
+/**
+ * @summary Generate YouTube chapters from Timeline/Script/Voice timestamps
+ */
+export const StartChapterBody = zod.object({
+  "renderId": zod.string()
+})
+
+export const StartChapterResponse = zod.object({
+  "id": zod.string(),
+  "renderId": zod.string(),
+  "status": zod.enum(['pending', 'running', 'completed', 'failed']),
+  "chapters": zod.array(zod.object({
+  "title": zod.string(),
+  "startMs": zod.number(),
+  "endMs": zod.number(),
+  "description": zod.string().nullish()
+})),
+  "youtubeExport": zod.string().nullish(),
+  "sources": zod.record(zod.string(), zod.unknown()).optional(),
+  "logs": zod.array(zod.string()),
+  "errorMessage": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string(),
+  "completedAt": zod.string().nullish()
+})
+
+
+/**
+ * @summary Get a chapter result by ID
+ */
+export const GetChapterParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const GetChapterResponse = zod.object({
+  "id": zod.string(),
+  "renderId": zod.string(),
+  "status": zod.enum(['pending', 'running', 'completed', 'failed']),
+  "chapters": zod.array(zod.object({
+  "title": zod.string(),
+  "startMs": zod.number(),
+  "endMs": zod.number(),
+  "description": zod.string().nullish()
+})),
+  "youtubeExport": zod.string().nullish(),
+  "sources": zod.record(zod.string(), zod.unknown()).optional(),
+  "logs": zod.array(zod.string()),
+  "errorMessage": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string(),
+  "completedAt": zod.string().nullish()
+})
+
+
+/**
+ * @summary Delete a chapter record
+ */
+export const DeleteChapterParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const DeleteChapterResponse = zod.void()
+
+
+/**
+ * @summary List production asset bundles
+ */
+export const ListProductionAssetsQueryParams = zod.object({
+  "limit": zod.coerce.number().nullish(),
+  "offset": zod.coerce.number().nullish()
+})
+
+export const ListProductionAssetsResponse = zod.object({
+  "items": zod.array(zod.object({
+  "id": zod.string(),
+  "renderId": zod.string(),
+  "status": zod.enum(['pending', 'partial', 'completed']),
+  "subtitleId": zod.string().nullish(),
+  "thumbnailId": zod.string().nullish(),
+  "chapterId": zod.string().nullish(),
+  "subtitle": zod.object({
+  "id": zod.string(),
+  "renderId": zod.string(),
+  "status": zod.enum(['pending', 'running', 'completed', 'failed']),
+  "language": zod.string().optional(),
+  "usedProvider": zod.string().nullish(),
+  "providers": zod.array(zod.string()).optional(),
+  "words": zod.array(zod.object({
+  "word": zod.string(),
+  "startMs": zod.number(),
+  "endMs": zod.number(),
+  "confidence": zod.number(),
+  "speaker": zod.string().nullish()
+})),
+  "sentences": zod.array(zod.object({
+  "text": zod.string(),
+  "startMs": zod.number(),
+  "endMs": zod.number(),
+  "confidence": zod.number().optional(),
+  "speaker": zod.string().nullish()
+})),
+  "paragraphs": zod.array(zod.object({
+  "text": zod.string(),
+  "startMs": zod.number(),
+  "endMs": zod.number()
+})),
+  "srtContent": zod.string().nullish(),
+  "vttContent": zod.string().nullish(),
+  "assContent": zod.string().nullish(),
+  "srtPath": zod.string().nullish(),
+  "vttPath": zod.string().nullish(),
+  "assPath": zod.string().nullish(),
+  "burnedMetadata": zod.record(zod.string(), zod.unknown()).optional(),
+  "animatedCaptionMetadata": zod.record(zod.string(), zod.unknown()).optional(),
+  "karaokeMetadata": zod.record(zod.string(), zod.unknown()).optional(),
+  "style": zod.record(zod.string(), zod.unknown()).optional(),
+  "captionPresets": zod.array(zod.record(zod.string(), zod.unknown())).optional(),
+  "speakerMetadata": zod.array(zod.record(zod.string(), zod.unknown())).optional(),
+  "avgConfidence": zod.number().nullish(),
+  "wordCount": zod.number().nullish(),
+  "durationMs": zod.number().nullish(),
+  "logs": zod.array(zod.string()),
+  "errorMessage": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string(),
+  "completedAt": zod.string().nullish()
+}).optional(),
+  "thumbnail": zod.object({
+  "id": zod.string(),
+  "renderId": zod.string(),
+  "status": zod.enum(['pending', 'running', 'completed', 'failed']),
+  "candidates": zod.array(zod.object({
+  "candidateId": zod.string(),
+  "timestampMs": zod.number(),
+  "path": zod.string(),
+  "width": zod.number(),
+  "height": zod.number(),
+  "sharpnessScore": zod.number(),
+  "qualityScore": zod.number(),
+  "brightness": zod.number(),
+  "dominantColor": zod.string().nullish(),
+  "faceDetected": zod.boolean().nullish(),
+  "objectsDetected": zod.array(zod.string()).optional(),
+  "safeTextRegions": zod.array(zod.record(zod.string(), zod.unknown())).optional()
+})),
+  "selectedCandidateIds": zod.array(zod.string()),
+  "templates": zod.array(zod.record(zod.string(), zod.unknown())).optional(),
+  "titleOverlay": zod.record(zod.string(), zod.unknown()).optional(),
+  "brandColors": zod.array(zod.string()).optional(),
+  "logs": zod.array(zod.string()),
+  "errorMessage": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string(),
+  "completedAt": zod.string().nullish()
+}).optional(),
+  "chapter": zod.object({
+  "id": zod.string(),
+  "renderId": zod.string(),
+  "status": zod.enum(['pending', 'running', 'completed', 'failed']),
+  "chapters": zod.array(zod.object({
+  "title": zod.string(),
+  "startMs": zod.number(),
+  "endMs": zod.number(),
+  "description": zod.string().nullish()
+})),
+  "youtubeExport": zod.string().nullish(),
+  "sources": zod.record(zod.string(), zod.unknown()).optional(),
+  "logs": zod.array(zod.string()),
+  "errorMessage": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string(),
+  "completedAt": zod.string().nullish()
+}).optional(),
+  "exportManifest": zod.record(zod.string(), zod.unknown()).optional(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string(),
+  "completedAt": zod.string().nullish()
+})),
+  "total": zod.number()
+})
+
+
+/**
+ * @summary Get (or lazily assemble) the production asset bundle for a render
+ */
+export const GetProductionAssetsParams = zod.object({
+  "renderId": zod.coerce.string()
+})
+
+export const GetProductionAssetsResponse = zod.object({
+  "id": zod.string(),
+  "renderId": zod.string(),
+  "status": zod.enum(['pending', 'partial', 'completed']),
+  "subtitleId": zod.string().nullish(),
+  "thumbnailId": zod.string().nullish(),
+  "chapterId": zod.string().nullish(),
+  "subtitle": zod.object({
+  "id": zod.string(),
+  "renderId": zod.string(),
+  "status": zod.enum(['pending', 'running', 'completed', 'failed']),
+  "language": zod.string().optional(),
+  "usedProvider": zod.string().nullish(),
+  "providers": zod.array(zod.string()).optional(),
+  "words": zod.array(zod.object({
+  "word": zod.string(),
+  "startMs": zod.number(),
+  "endMs": zod.number(),
+  "confidence": zod.number(),
+  "speaker": zod.string().nullish()
+})),
+  "sentences": zod.array(zod.object({
+  "text": zod.string(),
+  "startMs": zod.number(),
+  "endMs": zod.number(),
+  "confidence": zod.number().optional(),
+  "speaker": zod.string().nullish()
+})),
+  "paragraphs": zod.array(zod.object({
+  "text": zod.string(),
+  "startMs": zod.number(),
+  "endMs": zod.number()
+})),
+  "srtContent": zod.string().nullish(),
+  "vttContent": zod.string().nullish(),
+  "assContent": zod.string().nullish(),
+  "srtPath": zod.string().nullish(),
+  "vttPath": zod.string().nullish(),
+  "assPath": zod.string().nullish(),
+  "burnedMetadata": zod.record(zod.string(), zod.unknown()).optional(),
+  "animatedCaptionMetadata": zod.record(zod.string(), zod.unknown()).optional(),
+  "karaokeMetadata": zod.record(zod.string(), zod.unknown()).optional(),
+  "style": zod.record(zod.string(), zod.unknown()).optional(),
+  "captionPresets": zod.array(zod.record(zod.string(), zod.unknown())).optional(),
+  "speakerMetadata": zod.array(zod.record(zod.string(), zod.unknown())).optional(),
+  "avgConfidence": zod.number().nullish(),
+  "wordCount": zod.number().nullish(),
+  "durationMs": zod.number().nullish(),
+  "logs": zod.array(zod.string()),
+  "errorMessage": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string(),
+  "completedAt": zod.string().nullish()
+}).optional(),
+  "thumbnail": zod.object({
+  "id": zod.string(),
+  "renderId": zod.string(),
+  "status": zod.enum(['pending', 'running', 'completed', 'failed']),
+  "candidates": zod.array(zod.object({
+  "candidateId": zod.string(),
+  "timestampMs": zod.number(),
+  "path": zod.string(),
+  "width": zod.number(),
+  "height": zod.number(),
+  "sharpnessScore": zod.number(),
+  "qualityScore": zod.number(),
+  "brightness": zod.number(),
+  "dominantColor": zod.string().nullish(),
+  "faceDetected": zod.boolean().nullish(),
+  "objectsDetected": zod.array(zod.string()).optional(),
+  "safeTextRegions": zod.array(zod.record(zod.string(), zod.unknown())).optional()
+})),
+  "selectedCandidateIds": zod.array(zod.string()),
+  "templates": zod.array(zod.record(zod.string(), zod.unknown())).optional(),
+  "titleOverlay": zod.record(zod.string(), zod.unknown()).optional(),
+  "brandColors": zod.array(zod.string()).optional(),
+  "logs": zod.array(zod.string()),
+  "errorMessage": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string(),
+  "completedAt": zod.string().nullish()
+}).optional(),
+  "chapter": zod.object({
+  "id": zod.string(),
+  "renderId": zod.string(),
+  "status": zod.enum(['pending', 'running', 'completed', 'failed']),
+  "chapters": zod.array(zod.object({
+  "title": zod.string(),
+  "startMs": zod.number(),
+  "endMs": zod.number(),
+  "description": zod.string().nullish()
+})),
+  "youtubeExport": zod.string().nullish(),
+  "sources": zod.record(zod.string(), zod.unknown()).optional(),
+  "logs": zod.array(zod.string()),
+  "errorMessage": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string(),
+  "completedAt": zod.string().nullish()
+}).optional(),
+  "exportManifest": zod.record(zod.string(), zod.unknown()).optional(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string(),
+  "completedAt": zod.string().nullish()
+})
+
+
+/**
  * @summary Health check
  */
 export const HealthCheckResponse = zod.object({

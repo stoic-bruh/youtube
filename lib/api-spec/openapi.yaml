@@ -36,6 +36,14 @@ tags:
     description: Voice Engine — narration audio generation from scripts
   - name: renders
     description: Render Engine — MoviePy/FFmpeg composition of Timeline + Voice + Assets into a final MP4
+  - name: subtitles
+    description: Post-Processing — Subtitle Engine (Whisper transcription, SRT/VTT/ASS export)
+  - name: thumbnails
+    description: Post-Processing — Thumbnail Engine (frame selection, quality scoring, templates)
+  - name: chapters
+    description: Post-Processing — Chapter Engine (YouTube chapter generation)
+  - name: production-assets
+    description: Post-Processing — aggregated production asset bundle for a render
 
 paths:
   # ── Research ──────────────────────────────────────────────────────────────
@@ -651,6 +659,341 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/RenderProviderStats"
+
+  # ── Subtitles (Post-Processing) ──────────────────────────────────────────────
+  /subtitles:
+    get:
+      operationId: listSubtitles
+      tags: [subtitles]
+      summary: List subtitle jobs
+      parameters:
+        - name: renderId
+          in: query
+          schema:
+            type: ["string", "null"]
+        - name: status
+          in: query
+          schema:
+            type: ["string", "null"]
+        - name: limit
+          in: query
+          schema:
+            type: ["integer", "null"]
+        - name: offset
+          in: query
+          schema:
+            type: ["integer", "null"]
+      responses:
+        "200":
+          description: Subtitle list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SubtitleList"
+    post:
+      operationId: startSubtitle
+      tags: [subtitles]
+      summary: Transcribe a completed render's audio and generate SRT/VTT/ASS captions
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SubtitleInput"
+      responses:
+        "202":
+          description: Subtitle job accepted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SubtitleResult"
+
+  /subtitles/{id}:
+    get:
+      operationId: getSubtitle
+      tags: [subtitles]
+      summary: Get a subtitle result by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Subtitle result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SubtitleResult"
+        "404":
+          description: Not found
+    delete:
+      operationId: deleteSubtitle
+      tags: [subtitles]
+      summary: Delete a subtitle record
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Deleted
+
+  /subtitles/{id}/file/{format}:
+    get:
+      operationId: getSubtitleFile
+      tags: [subtitles]
+      summary: Download a subtitle export file (SRT/VTT/ASS)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: format
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [srt, vtt, ass]
+      responses:
+        "200":
+          description: Subtitle file stream
+        "404":
+          description: Not found
+
+  # ── Thumbnails (Post-Processing) ─────────────────────────────────────────────
+  /thumbnails:
+    get:
+      operationId: listThumbnails
+      tags: [thumbnails]
+      summary: List thumbnail jobs
+      parameters:
+        - name: renderId
+          in: query
+          schema:
+            type: ["string", "null"]
+        - name: status
+          in: query
+          schema:
+            type: ["string", "null"]
+        - name: limit
+          in: query
+          schema:
+            type: ["integer", "null"]
+        - name: offset
+          in: query
+          schema:
+            type: ["integer", "null"]
+      responses:
+        "200":
+          description: Thumbnail list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ThumbnailList"
+    post:
+      operationId: startThumbnail
+      tags: [thumbnails]
+      summary: Extract and score candidate thumbnail frames from a completed render
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ThumbnailInput"
+      responses:
+        "202":
+          description: Thumbnail job accepted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ThumbnailResult"
+
+  /thumbnails/{id}:
+    get:
+      operationId: getThumbnail
+      tags: [thumbnails]
+      summary: Get a thumbnail result by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Thumbnail result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ThumbnailResult"
+        "404":
+          description: Not found
+    delete:
+      operationId: deleteThumbnail
+      tags: [thumbnails]
+      summary: Delete a thumbnail record
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Deleted
+
+  /thumbnails/{id}/file/{candidateId}:
+    get:
+      operationId: getThumbnailFile
+      tags: [thumbnails]
+      summary: Download a candidate thumbnail JPEG by candidate ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: candidateId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Thumbnail image stream
+        "404":
+          description: Not found
+
+  # ── Chapters (Post-Processing) ───────────────────────────────────────────────
+  /chapters:
+    get:
+      operationId: listChapters
+      tags: [chapters]
+      summary: List chapter jobs
+      parameters:
+        - name: renderId
+          in: query
+          schema:
+            type: ["string", "null"]
+        - name: status
+          in: query
+          schema:
+            type: ["string", "null"]
+        - name: limit
+          in: query
+          schema:
+            type: ["integer", "null"]
+        - name: offset
+          in: query
+          schema:
+            type: ["integer", "null"]
+      responses:
+        "200":
+          description: Chapter list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChapterList"
+    post:
+      operationId: startChapter
+      tags: [chapters]
+      summary: Generate YouTube chapters from Timeline/Script/Voice timestamps
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChapterInput"
+      responses:
+        "202":
+          description: Chapter job accepted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChapterResult"
+
+  /chapters/{id}:
+    get:
+      operationId: getChapter
+      tags: [chapters]
+      summary: Get a chapter result by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Chapter result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChapterResult"
+        "404":
+          description: Not found
+    delete:
+      operationId: deleteChapter
+      tags: [chapters]
+      summary: Delete a chapter record
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Deleted
+
+  # ── Production Assets (Post-Processing) ──────────────────────────────────────
+  /production-assets:
+    get:
+      operationId: listProductionAssets
+      tags: [production-assets]
+      summary: List production asset bundles
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: ["integer", "null"]
+        - name: offset
+          in: query
+          schema:
+            type: ["integer", "null"]
+      responses:
+        "200":
+          description: Production asset list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductionAssetList"
+
+  /production-assets/{renderId}:
+    get:
+      operationId: getProductionAssets
+      tags: [production-assets]
+      summary: Get (or lazily assemble) the production asset bundle for a render
+      parameters:
+        - name: renderId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Production asset bundle
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductionAssetResult"
+        "404":
+          description: Not found
 
   /healthz:
     get:
@@ -2111,3 +2454,248 @@ components:
         avgRenderTimeSeconds:  { type: number }
         avgRealtimeFactor:     { type: number }
         totalOutputSeconds:    { type: number }
+
+    # ── Subtitles (Post-Processing) ─────────────────────────────────────────────
+    SubtitleInput:
+      type: object
+      required: [renderId]
+      properties:
+        renderId:  { type: string }
+        language:  { type: string }
+        providers:
+          type: array
+          items:
+            type: string
+            enum: [whisper, script-narration]
+
+    SubtitleWord:
+      type: object
+      required: [word, startMs, endMs, confidence]
+      properties:
+        word:       { type: string }
+        startMs:    { type: integer }
+        endMs:      { type: integer }
+        confidence: { type: number }
+        speaker:    { type: ["string", "null"] }
+
+    SubtitleSentence:
+      type: object
+      required: [text, startMs, endMs]
+      properties:
+        text:       { type: string }
+        startMs:    { type: integer }
+        endMs:      { type: integer }
+        confidence: { type: number }
+        speaker:    { type: ["string", "null"] }
+
+    SubtitleParagraph:
+      type: object
+      required: [text, startMs, endMs]
+      properties:
+        text:    { type: string }
+        startMs: { type: integer }
+        endMs:   { type: integer }
+
+    SubtitleResult:
+      type: object
+      required: [id, renderId, status, words, sentences, paragraphs, logs, createdAt, updatedAt]
+      properties:
+        id:            { type: string }
+        renderId:      { type: string }
+        status:
+          type: string
+          enum: [pending, running, completed, failed]
+        language:      { type: string }
+        usedProvider:  { type: ["string", "null"] }
+        providers:
+          type: array
+          items: { type: string }
+        words:
+          type: array
+          items: { $ref: "#/components/schemas/SubtitleWord" }
+        sentences:
+          type: array
+          items: { $ref: "#/components/schemas/SubtitleSentence" }
+        paragraphs:
+          type: array
+          items: { $ref: "#/components/schemas/SubtitleParagraph" }
+        srtContent:  { type: ["string", "null"] }
+        vttContent:  { type: ["string", "null"] }
+        assContent:  { type: ["string", "null"] }
+        srtPath:     { type: ["string", "null"] }
+        vttPath:     { type: ["string", "null"] }
+        assPath:     { type: ["string", "null"] }
+        burnedMetadata:          { type: object, additionalProperties: {} }
+        animatedCaptionMetadata: { type: object, additionalProperties: {} }
+        karaokeMetadata:         { type: object, additionalProperties: {} }
+        style:                   { type: object, additionalProperties: {} }
+        captionPresets:
+          type: array
+          items: { type: object, additionalProperties: {} }
+        speakerMetadata:
+          type: array
+          items: { type: object, additionalProperties: {} }
+        avgConfidence: { type: ["number", "null"] }
+        wordCount:     { type: ["integer", "null"] }
+        durationMs:    { type: ["integer", "null"] }
+        logs:
+          type: array
+          items: { type: string }
+        errorMessage: { type: ["string", "null"] }
+        createdAt:    { type: string }
+        updatedAt:    { type: string }
+        completedAt:  { type: ["string", "null"] }
+
+    SubtitleList:
+      type: object
+      required: [items, total]
+      properties:
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/SubtitleResult" }
+        total: { type: integer }
+
+    # ── Thumbnails (Post-Processing) ────────────────────────────────────────────
+    ThumbnailInput:
+      type: object
+      required: [renderId]
+      properties:
+        renderId: { type: string }
+        count:    { type: integer, minimum: 1, maximum: 10 }
+
+    ThumbnailCandidate:
+      type: object
+      required: [candidateId, timestampMs, path, width, height, sharpnessScore, qualityScore, brightness]
+      properties:
+        candidateId:      { type: string }
+        timestampMs:      { type: integer }
+        path:             { type: string }
+        width:            { type: integer }
+        height:           { type: integer }
+        sharpnessScore:   { type: number }
+        qualityScore:     { type: number }
+        brightness:       { type: number }
+        dominantColor:    { type: ["string", "null"] }
+        faceDetected:     { type: ["boolean", "null"] }
+        objectsDetected:
+          type: array
+          items: { type: string }
+        safeTextRegions:
+          type: array
+          items: { type: object, additionalProperties: {} }
+
+    ThumbnailResult:
+      type: object
+      required: [id, renderId, status, candidates, selectedCandidateIds, logs, createdAt, updatedAt]
+      properties:
+        id:       { type: string }
+        renderId: { type: string }
+        status:
+          type: string
+          enum: [pending, running, completed, failed]
+        candidates:
+          type: array
+          items: { $ref: "#/components/schemas/ThumbnailCandidate" }
+        selectedCandidateIds:
+          type: array
+          items: { type: string }
+        templates:
+          type: array
+          items: { type: object, additionalProperties: {} }
+        titleOverlay: { type: object, additionalProperties: {} }
+        brandColors:
+          type: array
+          items: { type: string }
+        logs:
+          type: array
+          items: { type: string }
+        errorMessage: { type: ["string", "null"] }
+        createdAt:    { type: string }
+        updatedAt:    { type: string }
+        completedAt:  { type: ["string", "null"] }
+
+    ThumbnailList:
+      type: object
+      required: [items, total]
+      properties:
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/ThumbnailResult" }
+        total: { type: integer }
+
+    # ── Chapters (Post-Processing) ──────────────────────────────────────────────
+    ChapterInput:
+      type: object
+      required: [renderId]
+      properties:
+        renderId: { type: string }
+
+    ChapterEntry:
+      type: object
+      required: [title, startMs, endMs]
+      properties:
+        title:       { type: string }
+        startMs:     { type: integer }
+        endMs:       { type: integer }
+        description: { type: ["string", "null"] }
+
+    ChapterResult:
+      type: object
+      required: [id, renderId, status, chapters, logs, createdAt, updatedAt]
+      properties:
+        id:       { type: string }
+        renderId: { type: string }
+        status:
+          type: string
+          enum: [pending, running, completed, failed]
+        chapters:
+          type: array
+          items: { $ref: "#/components/schemas/ChapterEntry" }
+        youtubeExport: { type: ["string", "null"] }
+        sources:       { type: object, additionalProperties: {} }
+        logs:
+          type: array
+          items: { type: string }
+        errorMessage: { type: ["string", "null"] }
+        createdAt:    { type: string }
+        updatedAt:    { type: string }
+        completedAt:  { type: ["string", "null"] }
+
+    ChapterList:
+      type: object
+      required: [items, total]
+      properties:
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/ChapterResult" }
+        total: { type: integer }
+
+    # ── Production Assets (Post-Processing) ─────────────────────────────────────
+    ProductionAssetResult:
+      type: object
+      required: [id, renderId, status, createdAt, updatedAt]
+      properties:
+        id:             { type: string }
+        renderId:       { type: string }
+        status:
+          type: string
+          enum: [pending, partial, completed]
+        subtitleId:     { type: ["string", "null"] }
+        thumbnailId:    { type: ["string", "null"] }
+        chapterId:      { type: ["string", "null"] }
+        subtitle:       { $ref: "#/components/schemas/SubtitleResult" }
+        thumbnail:      { $ref: "#/components/schemas/ThumbnailResult" }
+        chapter:        { $ref: "#/components/schemas/ChapterResult" }
+        exportManifest: { type: object, additionalProperties: {} }
+        createdAt:      { type: string }
+        updatedAt:      { type: string }
+        completedAt:    { type: ["string", "null"] }
+
+    ProductionAssetList:
+      type: object
+      required: [items, total]
+      properties:
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/ProductionAssetResult" }
+        total: { type: integer }

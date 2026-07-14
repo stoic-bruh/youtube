@@ -13,6 +13,10 @@ import settingsRouter from "./settings";
 import timelinesRouter from "./timelines";
 import voicesRouter from "./voices";
 import renderRouter from "./render";
+import subtitlesRouter from "./subtitles";
+import thumbnailsRouter from "./thumbnails";
+import chaptersRouter from "./chapters";
+import productionAssetsRouter from "./production-assets";
 
 const router: IRouter = Router();
 
@@ -24,6 +28,10 @@ router.use("/assets", assetsRouter);
 router.use("/timelines", timelinesRouter);
 router.use("/voices", voicesRouter);
 router.use("/renders", renderRouter);
+router.use("/subtitles", subtitlesRouter);
+router.use("/thumbnails", thumbnailsRouter);
+router.use("/chapters", chaptersRouter);
+router.use("/production-assets", productionAssetsRouter);
 router.use("/projects", projectsRouter);
 router.use("/pipelines", pipelinesRouter);
 router.use("/jobs", jobsRouter);

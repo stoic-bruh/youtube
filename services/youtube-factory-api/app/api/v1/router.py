@@ -37,3 +37,15 @@ router.include_router(timelines.router, tags=["timelines"])
 
 from app.api.v1.endpoints import render  # noqa: E402
 router.include_router(render.router, tags=["renders"])
+
+from app.api.v1.endpoints import subtitle  # noqa: E402
+router.include_router(subtitle.router, tags=["subtitles"])
+
+from app.api.v1.endpoints import thumbnail  # noqa: E402
+router.include_router(thumbnail.router, tags=["thumbnails"])
+
+from app.api.v1.endpoints import chapter  # noqa: E402
+router.include_router(chapter.router, tags=["chapters"])
+
+from app.api.v1.endpoints import production_assets  # noqa: E402
+router.include_router(production_assets.router, tags=["production-assets"])

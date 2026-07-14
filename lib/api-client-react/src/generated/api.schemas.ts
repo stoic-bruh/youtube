@@ -1223,6 +1223,262 @@ export interface RenderProviderStats {
   totalOutputSeconds?: number;
 }
 
+export type SubtitleInputProvidersItem = typeof SubtitleInputProvidersItem[keyof typeof SubtitleInputProvidersItem];
+
+
+export const SubtitleInputProvidersItem = {
+  whisper: 'whisper',
+  'script-narration': 'script-narration',
+} as const;
+
+export interface SubtitleInput {
+  renderId: string;
+  language?: string;
+  providers?: SubtitleInputProvidersItem[];
+}
+
+export interface SubtitleWord {
+  word: string;
+  startMs: number;
+  endMs: number;
+  confidence: number;
+  /** @nullable */
+  speaker?: string | null;
+}
+
+export interface SubtitleSentence {
+  text: string;
+  startMs: number;
+  endMs: number;
+  confidence?: number;
+  /** @nullable */
+  speaker?: string | null;
+}
+
+export interface SubtitleParagraph {
+  text: string;
+  startMs: number;
+  endMs: number;
+}
+
+export type SubtitleResultStatus = typeof SubtitleResultStatus[keyof typeof SubtitleResultStatus];
+
+
+export const SubtitleResultStatus = {
+  pending: 'pending',
+  running: 'running',
+  completed: 'completed',
+  failed: 'failed',
+} as const;
+
+export type SubtitleResultBurnedMetadata = {[key: string]: unknown};
+
+export type SubtitleResultAnimatedCaptionMetadata = {[key: string]: unknown};
+
+export type SubtitleResultKaraokeMetadata = {[key: string]: unknown};
+
+export type SubtitleResultStyle = {[key: string]: unknown};
+
+export type SubtitleResultCaptionPresetsItem = {[key: string]: unknown};
+
+export type SubtitleResultSpeakerMetadataItem = {[key: string]: unknown};
+
+export interface SubtitleResult {
+  id: string;
+  renderId: string;
+  status: SubtitleResultStatus;
+  language?: string;
+  /** @nullable */
+  usedProvider?: string | null;
+  providers?: string[];
+  words: SubtitleWord[];
+  sentences: SubtitleSentence[];
+  paragraphs: SubtitleParagraph[];
+  /** @nullable */
+  srtContent?: string | null;
+  /** @nullable */
+  vttContent?: string | null;
+  /** @nullable */
+  assContent?: string | null;
+  /** @nullable */
+  srtPath?: string | null;
+  /** @nullable */
+  vttPath?: string | null;
+  /** @nullable */
+  assPath?: string | null;
+  burnedMetadata?: SubtitleResultBurnedMetadata;
+  animatedCaptionMetadata?: SubtitleResultAnimatedCaptionMetadata;
+  karaokeMetadata?: SubtitleResultKaraokeMetadata;
+  style?: SubtitleResultStyle;
+  captionPresets?: SubtitleResultCaptionPresetsItem[];
+  speakerMetadata?: SubtitleResultSpeakerMetadataItem[];
+  /** @nullable */
+  avgConfidence?: number | null;
+  /** @nullable */
+  wordCount?: number | null;
+  /** @nullable */
+  durationMs?: number | null;
+  logs: string[];
+  /** @nullable */
+  errorMessage?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  /** @nullable */
+  completedAt?: string | null;
+}
+
+export interface SubtitleList {
+  items: SubtitleResult[];
+  total: number;
+}
+
+export interface ThumbnailInput {
+  renderId: string;
+  /**
+     * @minimum 1
+     * @maximum 10
+     */
+  count?: number;
+}
+
+export type ThumbnailCandidateSafeTextRegionsItem = {[key: string]: unknown};
+
+export interface ThumbnailCandidate {
+  candidateId: string;
+  timestampMs: number;
+  path: string;
+  width: number;
+  height: number;
+  sharpnessScore: number;
+  qualityScore: number;
+  brightness: number;
+  /** @nullable */
+  dominantColor?: string | null;
+  /** @nullable */
+  faceDetected?: boolean | null;
+  objectsDetected?: string[];
+  safeTextRegions?: ThumbnailCandidateSafeTextRegionsItem[];
+}
+
+export type ThumbnailResultStatus = typeof ThumbnailResultStatus[keyof typeof ThumbnailResultStatus];
+
+
+export const ThumbnailResultStatus = {
+  pending: 'pending',
+  running: 'running',
+  completed: 'completed',
+  failed: 'failed',
+} as const;
+
+export type ThumbnailResultTemplatesItem = {[key: string]: unknown};
+
+export type ThumbnailResultTitleOverlay = {[key: string]: unknown};
+
+export interface ThumbnailResult {
+  id: string;
+  renderId: string;
+  status: ThumbnailResultStatus;
+  candidates: ThumbnailCandidate[];
+  selectedCandidateIds: string[];
+  templates?: ThumbnailResultTemplatesItem[];
+  titleOverlay?: ThumbnailResultTitleOverlay;
+  brandColors?: string[];
+  logs: string[];
+  /** @nullable */
+  errorMessage?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  /** @nullable */
+  completedAt?: string | null;
+}
+
+export interface ThumbnailList {
+  items: ThumbnailResult[];
+  total: number;
+}
+
+export interface ChapterInput {
+  renderId: string;
+}
+
+export interface ChapterEntry {
+  title: string;
+  startMs: number;
+  endMs: number;
+  /** @nullable */
+  description?: string | null;
+}
+
+export type ChapterResultStatus = typeof ChapterResultStatus[keyof typeof ChapterResultStatus];
+
+
+export const ChapterResultStatus = {
+  pending: 'pending',
+  running: 'running',
+  completed: 'completed',
+  failed: 'failed',
+} as const;
+
+export type ChapterResultSources = {[key: string]: unknown};
+
+export interface ChapterResult {
+  id: string;
+  renderId: string;
+  status: ChapterResultStatus;
+  chapters: ChapterEntry[];
+  /** @nullable */
+  youtubeExport?: string | null;
+  sources?: ChapterResultSources;
+  logs: string[];
+  /** @nullable */
+  errorMessage?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  /** @nullable */
+  completedAt?: string | null;
+}
+
+export interface ChapterList {
+  items: ChapterResult[];
+  total: number;
+}
+
+export type ProductionAssetResultStatus = typeof ProductionAssetResultStatus[keyof typeof ProductionAssetResultStatus];
+
+
+export const ProductionAssetResultStatus = {
+  pending: 'pending',
+  partial: 'partial',
+  completed: 'completed',
+} as const;
+
+export type ProductionAssetResultExportManifest = {[key: string]: unknown};
+
+export interface ProductionAssetResult {
+  id: string;
+  renderId: string;
+  status: ProductionAssetResultStatus;
+  /** @nullable */
+  subtitleId?: string | null;
+  /** @nullable */
+  thumbnailId?: string | null;
+  /** @nullable */
+  chapterId?: string | null;
+  subtitle?: SubtitleResult;
+  thumbnail?: ThumbnailResult;
+  chapter?: ChapterResult;
+  exportManifest?: ProductionAssetResultExportManifest;
+  createdAt: string;
+  updatedAt: string;
+  /** @nullable */
+  completedAt?: string | null;
+}
+
+export interface ProductionAssetList {
+  items: ProductionAssetResult[];
+  total: number;
+}
+
 export type ListResearchParams = {
 /**
  * @nullable
@@ -1346,6 +1602,74 @@ timelineId?: string | null;
  * @nullable
  */
 status?: string | null;
+/**
+ * @nullable
+ */
+limit?: number | null;
+/**
+ * @nullable
+ */
+offset?: number | null;
+};
+
+export type ListSubtitlesParams = {
+/**
+ * @nullable
+ */
+renderId?: string | null;
+/**
+ * @nullable
+ */
+status?: string | null;
+/**
+ * @nullable
+ */
+limit?: number | null;
+/**
+ * @nullable
+ */
+offset?: number | null;
+};
+
+export type ListThumbnailsParams = {
+/**
+ * @nullable
+ */
+renderId?: string | null;
+/**
+ * @nullable
+ */
+status?: string | null;
+/**
+ * @nullable
+ */
+limit?: number | null;
+/**
+ * @nullable
+ */
+offset?: number | null;
+};
+
+export type ListChaptersParams = {
+/**
+ * @nullable
+ */
+renderId?: string | null;
+/**
+ * @nullable
+ */
+status?: string | null;
+/**
+ * @nullable
+ */
+limit?: number | null;
+/**
+ * @nullable
+ */
+offset?: number | null;
+};
+
+export type ListProductionAssetsParams = {
 /**
  * @nullable
  */

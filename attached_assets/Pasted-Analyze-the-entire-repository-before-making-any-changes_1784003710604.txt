@@ -1,0 +1,271 @@
+Analyze the entire repository before making any changes.
+
+Current Project Status
+
+✅ Production Architecture
+✅ Infrastructure
+✅ Research Service
+✅ Script Service
+✅ Storyboard Service
+✅ Asset Intelligence Engine
+✅ Media Timeline Engine
+✅ Voice Engine
+✅ MoviePy Render Engine (verified end-to-end with a real MP4)
+
+====================================================
+
+IMPORTANT
+
+Do NOT regenerate completed modules.
+
+Do NOT modify working render code.
+
+Preserve the current architecture.
+
+====================================================
+
+PHASE 1 — AUDIT
+
+Audit the Render Engine.
+
+Verify:
+
+- MoviePy integration
+- FFmpeg integration
+- Render API
+- Render Studio
+- Render database models
+- Generated clients
+- React pages
+
+Fix ONLY genuine bugs discovered during verification.
+
+Do not refactor.
+
+====================================================
+
+PHASE 2 — IMPLEMENT THE POST-PROCESSING ENGINE
+
+The Post-Processing Engine begins AFTER a render completes.
+
+Input:
+
+RenderResult
+
+Output:
+
+ProductionAssets
+
+====================================================
+
+Implement these services
+
+SubtitleService
+
+SubtitleRepository
+
+SubtitleProvider
+
+SubtitleResult
+
+ThumbnailService
+
+ThumbnailRepository
+
+ThumbnailResult
+
+ChapterService
+
+ChapterRepository
+
+ChapterResult
+
+ProductionAssetService
+
+====================================================
+
+Subtitle Engine
+
+Implement:
+
+Whisper transcription
+
+Word timestamps
+
+Sentence timestamps
+
+Paragraph timestamps
+
+SRT generation
+
+VTT generation
+
+ASS subtitle generation
+
+Burned subtitle metadata
+
+Animated caption metadata
+
+Karaoke timing metadata
+
+Subtitle styles
+
+Caption presets
+
+Speaker metadata
+
+Confidence scores
+
+Export formats
+
+====================================================
+
+Thumbnail Engine
+
+Implement:
+
+Automatic frame selection
+
+Scene quality scoring
+
+Sharpness scoring
+
+Face detection interface (placeholder)
+
+Object detection interface (placeholder)
+
+Safe text regions
+
+Thumbnail templates
+
+Multiple thumbnail candidates
+
+Title overlay metadata
+
+Brand color support
+
+Thumbnail metadata
+
+====================================================
+
+Chapter Engine
+
+Generate chapters from:
+
+Timeline
+
+Script
+
+Voice timestamps
+
+Create:
+
+Chapter titles
+
+Start timestamps
+
+End timestamps
+
+Descriptions
+
+Export for YouTube.
+
+====================================================
+
+Backend
+
+Implement:
+
+SQLAlchemy models
+
+Repositories
+
+Services
+
+Celery tasks
+
+FastAPI endpoints
+
+OpenAPI
+
+Generated React Query client
+
+Generated Zod client
+
+Express routes
+
+====================================================
+
+Frontend
+
+Create Production Studio.
+
+Include:
+
+Subtitle Manager
+
+Subtitle Preview
+
+Caption Style Editor
+
+Thumbnail Browser
+
+Thumbnail Preview
+
+Frame Selector
+
+Chapter Editor
+
+Production Assets
+
+Export Manager
+
+Processing Queue
+
+Logs
+
+====================================================
+
+Verification
+
+Run:
+
+Python tests
+
+Frontend build
+
+Backend build
+
+TypeScript typecheck
+
+API smoke tests
+
+Generate:
+
+SRT
+
+VTT
+
+ASS
+
+3 Thumbnail candidates
+
+YouTube Chapters
+
+Verify all files are successfully generated from a real rendered video.
+
+====================================================
+
+STOP.
+
+Do NOT implement:
+
+SEO Engine
+
+Upload Engine
+
+Analytics
+
+Autonomous Orchestrator
+
+Commit only Post-Processing Engine related changes.
